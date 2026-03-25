@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Boleta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { institucional: { 500: '#2563eb', 700: '#1d4ed8' } } } } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+    <header class="bg-white pt-6 pb-4 px-6 border-b border-gray-200 flex justify-between items-center shadow-sm">
+        <a href="ciudadano.html"><i data-lucide="x" class="w-6 h-6 text-gray-500 hover:text-red-500"></i></a>
+        <h2 class="text-lg font-bold text-gray-800">Boleta Cifrada</h2>
+        <i data-lucide="info" class="w-6 h-6 text-institucional-500"></i>
+    </header>
+
+    <main class="flex-1 px-6 py-8 max-w-2xl mx-auto w-full">
+        <h3 class="font-bold text-gray-800 text-xl mb-2">Presupuesto 2026</h3>
+        <p class="text-sm text-gray-500 mb-8">Selecciona una opción. Tu voto será cifrado criptográficamente antes de ser enviado a la red.</p>
+
+        <form id="votoForm" class="space-y-4">
+            <label class="flex items-center p-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-institucional-500 transition">
+                <input type="radio" name="voto" required class="w-5 h-5 text-institucional-500">
+                <div class="ml-4">
+                    <h4 class="font-bold text-gray-800">Proyecto A: Alumbrado</h4>
+                    <p class="text-xs text-gray-500 mt-1">Renovación de luminarias LED.</p>
+                </div>
+            </label>
+            <label class="flex items-center p-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-institucional-500 transition">
+                <input type="radio" name="voto" required class="w-5 h-5 text-institucional-500">
+                <div class="ml-4">
+                    <h4 class="font-bold text-gray-800">Proyecto B: Seguridad</h4>
+                    <p class="text-xs text-gray-500 mt-1">Instalación de cámaras C5.</p>
+                </div>
+            </label>
+
+            <div class="pt-8">
+                <div class="flex items-center justify-center mb-4 text-institucional-700">
+                    <i data-lucide="lock" class="w-4 h-4 mr-2"></i><span class="text-xs font-bold uppercase tracking-wider">Conexión Segura (AES-256)</span>
+                </div>
+                <button type="submit" class="w-full bg-institucional-700 hover:bg-institucional-900 text-white font-bold py-4 rounded-xl shadow-lg transition">
+                    Cifrar y Emitir Voto
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        document.getElementById('votoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('¡Éxito! Tu voto ha sido cifrado y registrado en la Blockchain. (Redirigiendo al inicio...)');
+            window.location.href = 'ciudadano.html';
+        });
+    </script>
+</body>
+</html>

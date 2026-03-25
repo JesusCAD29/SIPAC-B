@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { institucional: { 500: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } } }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+    <header class="bg-institucional-900 pt-12 pb-6 px-6 text-white text-center shadow-md">
+        <i data-lucide="shield-check" class="w-16 h-16 mx-auto mb-2 text-white"></i>
+        <h1 class="text-3xl font-bold tracking-wider">SIPAC-B</h1>
+        <p class="text-sm text-blue-200 mt-1">Tu voz, tu elección.</p>
+    </header>
+
+    <main class="flex-1 px-6 py-10 flex flex-col justify-center max-w-md mx-auto w-full">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-8 text-center">Iniciar Sesión</h2>
+        <form action="ciudadano.html" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">CURP</label>
+                <div class="relative">
+                    <i data-lucide="user" class="absolute left-3 top-3 h-5 w-5 text-gray-400"></i>
+                    <input type="text" required class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-institucional-500" placeholder="Ej. ABCD123456...">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-3 top-3 h-5 w-5 text-gray-400"></i>
+                    <input type="password" required class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-institucional-500" placeholder="••••••••">
+                </div>
+            </div>
+            <button type="submit" class="w-full mt-4 bg-institucional-700 hover:bg-institucional-900 text-white font-semibold py-3.5 rounded-xl shadow-lg transition flex justify-center items-center">
+                Ingresar al sistema <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
+            </button>
+        </form>
+        <div class="mt-8 text-center flex flex-col space-y-3">
+            <a href="registro.html" class="text-institucional-700 font-semibold text-sm hover:underline">¿No tienes cuenta? Regístrate aquí</a>
+            <div class="pt-4 border-t border-gray-200 mt-4">
+                <p class="text-xs text-gray-400 mb-2">Accesos rápidos para pruebas (Sprint 1):</p>
+                <a href="admin.html" class="text-xs text-gray-600 hover:text-institucional-700 mr-3">Ver Admin</a>
+                <a href="observador.html" class="text-xs text-gray-600 hover:text-institucional-700">Ver Observador</a>
+            </div>
+        </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

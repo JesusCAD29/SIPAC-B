@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Registro Seguro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { institucional: { 500: '#2563eb', 700: '#1d4ed8' } } } } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+    <header class="bg-white pt-6 pb-4 px-6 border-b border-gray-200 flex items-center shadow-sm">
+        <a href="index.html" class="text-gray-500 hover:text-gray-800"><i data-lucide="arrow-left" class="w-6 h-6"></i></a>
+        <h2 class="ml-4 text-xl font-bold text-gray-800">Registro Híbrido</h2>
+    </header>
+
+    <main class="flex-1 px-6 py-8 flex flex-col max-w-md mx-auto w-full">
+        <div class="mb-8">
+            <div class="flex justify-between text-xs font-semibold text-gray-500 mb-2">
+                <span class="text-institucional-700">1. Documento (OCR)</span><span>2. SMS (2FA)</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-institucional-500 h-2 rounded-full w-1/2"></div></div>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">Verificación de Identidad</h3>
+        <p class="text-sm text-gray-500 text-center mb-8">Escanea tu identificación oficial para extraer tus datos de forma segura.</p>
+
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de documento</label>
+            <select class="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-50">
+                <option>INE (Credencial para Votar)</option>
+                <option>Pasaporte</option>
+            </select>
+        </div>
+
+        <div class="flex-1 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center bg-gray-100 mb-8 min-h-[200px]">
+            <i data-lucide="camera" class="w-12 h-12 text-institucional-500 mb-3"></i>
+            <p class="text-sm font-medium text-gray-600">Apunta la cámara al documento</p>
+        </div>
+
+        <a href="ciudadano.html" class="w-full bg-institucional-700 hover:bg-institucional-900 text-white font-semibold py-3.5 rounded-xl shadow-lg flex justify-center items-center mt-auto">
+            <i data-lucide="scan" class="mr-2 w-5 h-5"></i> Simular Escaneo Exitoso
+        </a>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

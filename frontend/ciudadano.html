@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { institucional: { 500: '#2563eb', 900: '#1e3a8a' } } } } }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col font-sans">
+    <header class="bg-institucional-900 pt-8 pb-6 px-6 flex justify-between items-center shadow-md">
+        <div>
+            <p class="text-blue-200 text-sm">Bienvenido(a)</p>
+            <h2 class="text-white font-bold text-xl">Jesús García</h2>
+        </div>
+        <a href="index.html" class="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200">
+            <i data-lucide="log-out" class="w-5 h-5 text-institucional-900"></i>
+        </a>
+    </header>
+
+    <main class="flex-1 px-6 py-8 max-w-3xl mx-auto w-full">
+        <h3 class="text-lg font-bold text-gray-800 mb-6 border-b pb-2">Consultas y Elecciones Activas</h3>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-6 transition hover:shadow-md">
+            <div class="flex justify-between items-start mb-4">
+                <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-md">Abierta</span>
+                <i data-lucide="calendar" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <h4 class="font-bold text-gray-800 text-lg">Presupuesto Participativo 2026</h4>
+            <p class="text-sm text-gray-500 mt-2 mb-6">Decide el destino de los fondos para mejoras en tu colonia.</p>
+            <a href="boleta.html" class="block text-center w-full bg-institucional-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition">
+                Participar Ahora
+            </a>
+        </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
