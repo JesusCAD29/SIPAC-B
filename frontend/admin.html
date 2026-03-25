@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-blue-900 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">SIPAC-B Admin</h1>
+            <span class="text-sm border border-white px-2 py-1 rounded">Sesión: Administrador</span>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md col-span-1">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2">Configurar Elección</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Título de la Elección</label>
+                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50" placeholder="Ej. Presupuesto 2026">
+                    </div>
+                    <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Publicar Elección</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md col-span-2">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2">Gestión de Candidatos (RF015)</h2>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg h-64 flex flex-col items-center justify-center text-gray-500">
+                    <p>Arrastra aquí las fotos o perfiles de los candidatos</p>
+                    <span class="text-xs mt-2 uppercase">Funcionalidad Drag-and-Drop (En Desarrollo)</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

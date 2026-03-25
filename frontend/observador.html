@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAC-B | Portal del Observador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans">
+    <nav class="bg-indigo-900 p-4 border-b border-indigo-500">
+        <div class="container mx-auto">
+            <h1 class="text-xl font-bold tracking-widest">PORTAL DEL OBSERVADOR (RD008)</h1>
+            <p class="text-xs text-indigo-300">Auditoría Blockchain en Tiempo Real</p>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-mono text-green-400 font-bold uppercase">Flujo de Bloques Confirmados</h2>
+                <span class="animate-pulse bg-red-600 text-white text-[10px] px-2 py-1 rounded">LIVE</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm font-mono">
+                    <thead>
+                        <tr class="text-slate-400 border-b border-slate-700">
+                            <th class="py-2">Hash del Bloque</th>
+                            <th class="py-2">Timestamp</th>
+                            <th class="py-2">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs">
+                        <tr class="border-b border-slate-700/50">
+                            <td class="py-4 text-indigo-400">0x4f8a...b2c1d</td>
+                            <td class="py-4 text-slate-400">2026-03-24 22:15:05</td>
+                            <td class="py-4"><span class="text-green-500">[CONFIRMADO]</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="py-8 text-center text-slate-500 italic">
+                                Sincronizando con nodos Blockchain... (Sprint 4)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
