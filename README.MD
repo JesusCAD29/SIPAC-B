@@ -29,12 +29,4 @@ Al descentralizar el registro de votos mediante tecnología Blockchain e integra
 * **Blockchain:** Hyperledger Fabric (o red DLT equivalente).
 
 ---
-
-## Cómo empezar (Entorno de Desarrollo)
-
-1. Clona este repositorio: `git clone https://github.com/JesusCAD29/SIPAC-B.git`
-2. Abre la carpeta en **Visual Studio Code**.
-3. Abre los archivos de la carpeta `/frontend` en tu navegador para visualizar los mockups funcionales.
-
----
-**Desarrollado por el Equipo 12 - Fundamentos de Ingeniería de Software** *Tecnológico Nacional de México* *(Cristopher Ali Cruz Romero, Jesús Yahir García Chávez, Ángel Uriel Cortes Martínez)*
+**Desarrollado por el Equipo 1 - Ingeniería de Software** *Tecnológico Nacional de México* *(Jesús Yahir García Chávez, Ángel Uriel Cortes Martínez, Javier Alessandro Ascecio Flores)*
