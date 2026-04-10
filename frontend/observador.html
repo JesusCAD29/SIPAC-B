@@ -7,38 +7,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans">
-    <nav class="bg-indigo-900 p-4 border-b border-indigo-500">
-        <div class="container mx-auto">
-            <h1 class="text-xl font-bold tracking-widest">PORTAL DEL OBSERVADOR (RD008)</h1>
-            <p class="text-xs text-indigo-300">Auditoría Blockchain en Tiempo Real</p>
+    <nav class="bg-indigo-900 p-4 border-b border-indigo-500 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold tracking-widest">PORTAL DEL OBSERVADOR</h1>
+                <p class="text-xs text-indigo-300">Auditoría Blockchain en Tiempo Real</p>
+            </div>
+            <div class="text-right">
+                <span id="status-cadena" class="bg-gray-600 text-white text-xs px-2 py-1 rounded font-mono">Verificando red...</span>
+                <p class="text-xs text-slate-400 mt-1">Total Bloques: <span id="total-bloques" class="font-bold text-white">0</span></p>
+            </div>
         </div>
     </nav>
 
     <main class="container mx-auto mt-8 p-4">
         <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-lg font-mono text-green-400 font-bold uppercase">Flujo de Bloques Confirmados</h2>
-                <span class="animate-pulse bg-red-600 text-white text-[10px] px-2 py-1 rounded">LIVE</span>
+                <h2 class="text-lg font-mono text-green-400 font-bold uppercase">Registro Inmutable de Transacciones</h2>
+                <button onclick="cargarBlockchain()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded transition">
+                    <span class="animate-pulse h-2 w-2 bg-red-500 rounded-full"></span>
+                    Actualizar Datos
+                </button>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm font-mono">
+                <table class="w-full text-left text-sm font-mono whitespace-nowrap">
                     <thead>
-                        <tr class="text-slate-400 border-b border-slate-700">
-                            <th class="py-2">Hash del Bloque</th>
-                            <th class="py-2">Timestamp</th>
-                            <th class="py-2">Estado</th>
+                        <tr class="text-slate-400 border-b border-slate-700 bg-slate-800/50">
+                            <th class="py-3 px-4">Bloque #</th>
+                            <th class="py-3 px-4">Timestamp</th>
+                            <th class="py-3 px-4">Hash Generado (Firma Digital)</th>
+                            <th class="py-3 px-4">Carga Útil (Voto)</th>
                         </tr>
                     </thead>
-                    <tbody class="text-xs">
-                        <tr class="border-b border-slate-700/50">
-                            <td class="py-4 text-indigo-400">0x4f8a...b2c1d</td>
-                            <td class="py-4 text-slate-400">2026-03-24 22:15:05</td>
-                            <td class="py-4"><span class="text-green-500">[CONFIRMADO]</span></td>
-                        </tr>
+                    <tbody id="tabla-blockchain" class="text-xs divide-y divide-slate-700/50">
                         <tr>
-                            <td colspan="3" class="py-8 text-center text-slate-500 italic">
-                                Sincronizando con nodos Blockchain... (Sprint 4)
+                            <td colspan="4" class="py-8 text-center text-slate-500 italic">
+                                Sincronizando con el servidor SIPAC-B...
                             </td>
                         </tr>
                     </tbody>
@@ -46,5 +51,64 @@
             </div>
         </div>
     </main>
+
+    <script>
+        async function cargarBlockchain() {
+            try {
+                // 1. Llamamos a tu API de Node.js
+                const respuesta = await fetch('/api/blockchain');
+                const datos = await respuesta.json();
+
+                // 2. Actualizamos los contadores de arriba
+                document.getElementById('total-bloques').innerText = datos.totalVotos + 1; // +1 por el bloque génesis
+                
+                const statusBadge = document.getElementById('status-cadena');
+                if (datos.valida) {
+                    statusBadge.innerText = "CADENA ÍNTEGRA";
+                    statusBadge.className = "bg-green-600 text-white text-xs px-2 py-1 rounded font-mono shadow-[0_0_10px_rgba(34,197,94,0.5)]";
+                } else {
+                    statusBadge.innerText = "¡ALERTA DE FRAUDE!";
+                    statusBadge.className = "bg-red-600 text-white text-xs px-2 py-1 rounded font-mono shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse";
+                }
+
+                // 3. Limpiamos la tabla
+                const tabla = document.getElementById('tabla-blockchain');
+                tabla.innerHTML = '';
+
+                // 4. Dibujamos cada bloque de la base de datos
+                datos.cadena.forEach((bloque) => {
+                    // Preparamos el texto del voto dependiendo si es el Génesis o un voto normal
+                    let textoVoto = bloque.index === 0 
+                        ? `<span class="text-yellow-400">${bloque.data.mensaje}</span>`
+                        : `Folio: <span class="text-indigo-300">${bloque.data.folio.substring(0,8)}...</span> | Voto: <span class="font-bold text-white">${bloque.data.candidato}</span>`;
+
+                    const fila = `
+                        <tr class="hover:bg-slate-700/30 transition-colors">
+                            <td class="py-4 px-4 font-bold text-slate-300">[${bloque.index}]</td>
+                            <td class="py-4 px-4 text-slate-400">${bloque.timestamp}</td>
+                            <td class="py-4 px-4 text-green-400" title="${bloque.hash}">
+                                ${bloque.hash.substring(0, 16)}...${bloque.hash.substring(bloque.hash.length - 8)}
+                            </td>
+                            <td class="py-4 px-4">${textoVoto}</td>
+                        </tr>
+                    `;
+                    tabla.innerHTML += fila;
+                });
+
+            } catch (error) {
+                console.error("Error al conectar con la Blockchain:", error);
+                document.getElementById('tabla-blockchain').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-red-500 font-bold">
+                            ⚠️ Error de conexión. ¿Está encendido el servidor Node.js?
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Ejecutar la función en cuanto abra la página
+        cargarBlockchain();
+    </script>
 </body>
 </html>

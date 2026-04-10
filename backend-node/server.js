@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
 require('dotenv').config();
@@ -10,6 +11,9 @@ const Voto = require('./models/Voto'); // Importamos el modelo
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// 🔗 CONEXIÓN AL FRONTEND: Le decimos a Node que busque los archivos web subiendo un nivel (..)
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;

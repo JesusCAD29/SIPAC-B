@@ -3,38 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAC-B | Panel de Administración</title>
+    <title>SIPAC-B | Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-    <nav class="bg-blue-900 text-white p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">SIPAC-B Admin</h1>
-            <span class="text-sm border border-white px-2 py-1 rounded">Sesión: Administrador</span>
-        </div>
-    </nav>
+<body class="bg-slate-900 text-slate-100 font-sans p-4 md:p-8">
 
-    <main class="container mx-auto mt-8 p-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow-md col-span-1">
-                <h2 class="text-lg font-semibold mb-4 border-b pb-2">Configurar Elección</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Título de la Elección</label>
-                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50" placeholder="Ej. Presupuesto 2026">
+    <div class="max-w-6xl mx-auto flex flex-col gap-6 md:gap-8">
+
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4 md:pb-6">
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-900/50 p-2 rounded-xl border border-indigo-500/30">
+                    <svg class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-100">Admin Dashboard</h1>
+                    <p class="text-sm text-slate-400 mt-1">Inteligencia de Datos SIPAC-B</p>
+                </div>
+            </div>
+            
+            <button onclick="cargarResultados()" class="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition transform hover:scale-105 active:scale-95">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Sincronizar Urnas
+            </button>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8">
+
+            <div class="lg:col-span-2 flex flex-col">
+                <div class="w-full h-48 lg:h-full min-h-[250px] bg-gradient-to-br from-indigo-900 via-slate-800 to-amber-900/40 rounded-3xl relative border border-slate-700 shadow-2xl overflow-hidden flex flex-col justify-between p-6">
+                    <div class="absolute inset-0 grid grid-cols-6 grid-rows-4 gap-px opacity-20">
+                        <div class="col-span-6 row-span-4 bg-slate-900/40"></div>
                     </div>
-                    <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Publicar Elección</button>
+                    
+                    <div class="relative z-10 self-start bg-red-500/20 text-red-300 text-xs px-4 py-2 rounded-full font-bold flex items-center gap-2 border border-red-500/30 backdrop-blur-sm">
+                        <span class="h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                        Zona Alta Prioridad
+                    </div>
+
+                    <div class="relative z-10 mt-auto">
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Monitor Electoral</h3>
+                        <p class="text-sm text-slate-300">Conexión en vivo con el nodo central de la Blockchain.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-md col-span-2">
-                <h2 class="text-lg font-semibold mb-4 border-b pb-2">Gestión de Candidatos (RF015)</h2>
-                <div class="border-2 border-dashed border-gray-300 rounded-lg h-64 flex flex-col items-center justify-center text-gray-500">
-                    <p>Arrastra aquí las fotos o perfiles de los candidatos</p>
-                    <span class="text-xs mt-2 uppercase">Funcionalidad Drag-and-Drop (En Desarrollo)</span>
+            <div class="lg:col-span-3 bg-slate-800 p-6 md:p-8 rounded-3xl border border-slate-700 shadow-xl flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-8">
+                    <svg class="h-7 w-7 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-100">Análisis del Sufragio</h3>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-baseline">
+                            <span class="font-bold text-slate-300 text-lg">Planilla Azul</span>
+                            <span class="text-slate-100 font-bold text-3xl"><span id="pct-azul">0</span>% <span class="text-slate-400 font-normal text-sm uppercase tracking-widest">Sufragios</span></span>
+                        </div>
+                        <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+                            <div id="bar-azul" class="h-full bg-indigo-500 rounded-full w-0 relative">
+                                <div class="absolute inset-0 bg-white/20 w-full h-1"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-baseline">
+                            <span class="font-bold text-slate-300 text-lg">Planilla Roja</span>
+                            <span class="text-slate-100 font-bold text-3xl"><span id="pct-roja">0</span>% <span class="text-slate-400 font-normal text-sm uppercase tracking-widest">Sufragios</span></span>
+                        </div>
+                        <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+                            <div id="bar-roja" class="h-full bg-red-500 rounded-full w-0 relative">
+                                <div class="absolute inset-0 bg-white/20 w-full h-1"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+
+        </main>
+    </div>
+
+    <script>
+        async function cargarResultados() {
+            try {
+                const respuesta = await fetch('/api/blockchain');
+                const datos = await respuesta.json();
+
+                const conteo = {};
+                let totalVotosReales = 0;
+                
+                datos.cadena.forEach(bloque => {
+                    if (bloque.index > 0) {
+                        const candidato = bloque.data.candidato;
+                        conteo[candidato] = (conteo[candidato] || 0) + 1;
+                        totalVotosReales++;
+                    }
+                });
+
+                if (totalVotosReales === 0) totalVotosReales = 1;
+
+                const votosAzul = conteo['Planilla Azul'] || 0;
+                const votosRoja = conteo['Planilla Roja'] || 0;
+                
+                const pctAzul = Math.round((votosAzul / totalVotosReales) * 100);
+                const pctRoja = Math.round((votosRoja / totalVotosReales) * 100);
+
+                // Animaciones fluidas
+                anime({ targets: '#bar-azul', width: `${pctAzul}%`, easing: 'easeOutQuint', duration: 1500 });
+                anime({ targets: '#bar-roja', width: `${pctRoja}%`, easing: 'easeOutQuint', duration: 1500 });
+
+                const pctAzulEl = document.getElementById('pct-azul');
+                anime({ targets: pctAzulEl, innerText: [pctAzulEl.innerText, pctAzul], round: 1, easing: 'easeOutQuint', duration: 1500 });
+
+                const pctRojaEl = document.getElementById('pct-roja');
+                anime({ targets: pctRojaEl, innerText: [pctRojaEl.innerText, pctRoja], round: 1, easing: 'easeOutQuint', duration: 1500 });
+
+            } catch (error) {
+                console.error("Error conectando a la API SIPAC-B:", error);
+            }
+        }
+
+        cargarResultados();
+    </script>
 </body>
 </html>
