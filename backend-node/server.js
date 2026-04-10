@@ -62,6 +62,40 @@ app.get('/api/blockchain', (req, res) => {
 // Importamos el modelo de Ciudadano arriba de tu server.js
 const Ciudadano = require('./models/Ciudadano');
 
+// --- RUTA DE AUTENTICACIÓN (LOGIN) ---
+app.post('/api/login', async (req, res) => {
+    const { identificador, password } = req.body;
+
+    try {
+        // 1. Buscamos si la persona existe en MongoDB
+        const votante = await Ciudadano.findOne({ ine: identificador });
+
+        if (!votante) {
+            return res.status(401).json({ error: '❌ Usuario no encontrado en el padrón.' });
+        }
+
+        // 2. Simulamos la validación de contraseña (para pruebas del prototipo)
+        if (password !== '12345') {
+            return res.status(401).json({ error: '❌ Contraseña incorrecta. (Para pruebas usa: 12345)' });
+        }
+
+        // 3. REGLA DE ORO: Si ya votó, no lo dejamos ni entrar a la cabina
+        if (votante.haVotado) {
+            return res.status(403).json({ error: '⚠️ Ya has ejercido tu voto en este proceso electoral.' });
+        }
+
+        // 4. Todo OK, damos luz verde
+        res.json({ 
+            mensaje: 'Acceso concedido', 
+            ine: votante.ine, 
+            nombre: votante.nombre 
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 // RUTA DE VOTACIÓN PROTEGIDA (RF007 + Seguridad)
 app.post('/api/votar', async (req, res) => {
     const { ine, candidato } = req.body;

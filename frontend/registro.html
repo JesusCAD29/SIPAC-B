@@ -3,47 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAC-B | Registro Seguro</title>
+    <title>SIPAC-B | Módulo de Registro (OCR)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { theme: { extend: { colors: { institucional: { 500: '#2563eb', 700: '#1d4ed8' } } } } }
-    </script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
-    <header class="bg-white pt-6 pb-4 px-6 border-b border-gray-200 flex items-center shadow-sm">
-        <a href="index.html" class="text-gray-500 hover:text-gray-800"><i data-lucide="arrow-left" class="w-6 h-6"></i></a>
-        <h2 class="ml-4 text-xl font-bold text-gray-800">Registro Híbrido</h2>
-    </header>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-8 flex justify-center items-center">
 
-    <main class="flex-1 px-6 py-8 flex flex-col max-w-md mx-auto w-full">
-        <div class="mb-8">
-            <div class="flex justify-between text-xs font-semibold text-gray-500 mb-2">
-                <span class="text-institucional-700">1. Documento (OCR)</span><span>2. SMS (2FA)</span>
+    <div class="w-full max-w-4xl bg-slate-800 rounded-3xl border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        
+        <div class="w-full md:w-1/2 bg-slate-900/50 p-8 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-indigo-400 flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Escáner de Credencial
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Sube una foto clara de la INE para extraer los datos automáticamente usando IA.</p>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-institucional-500 h-2 rounded-full w-1/2"></div></div>
+
+            <label id="drop-zone" class="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-900/20 transition-all group relative overflow-hidden min-h-[200px]">
+                <input type="file" id="ine-image" accept="image/*" class="hidden" onchange="procesarImagen(event)">
+                
+                <div id="upload-placeholder" class="text-center p-6">
+                    <svg class="mx-auto h-12 w-12 text-slate-500 group-hover:text-indigo-400 transition-colors" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <p class="mt-2 text-sm text-slate-400">Clic para tomar foto o subir archivo</p>
+                </div>
+
+                <img id="preview-img" class="hidden absolute inset-0 w-full h-full object-cover opacity-50" />
+                
+                <div id="loading-overlay" class="hidden absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center backdrop-blur-sm z-10">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500 mb-3"></div>
+                    <p id="loading-text" class="text-indigo-400 text-sm font-bold animate-pulse">Iniciando motor OCR...</p>
+                </div>
+            </label>
         </div>
 
-        <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">Verificación de Identidad</h3>
-        <p class="text-sm text-gray-500 text-center mb-8">Escanea tu identificación oficial para extraer tus datos de forma segura.</p>
+        <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+            <h2 class="text-2xl font-bold text-white mb-6">Padrón Electoral</h2>
+            
+            <form id="form-registro" onsubmit="registrarCiudadano(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Clave de Elector / Matrícula</label>
+                    <input type="text" id="input-ine" required placeholder="Detectando..." 
+                        class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition font-mono text-lg">
+                </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de documento</label>
-            <select class="w-full py-3 px-4 border border-gray-300 rounded-xl bg-gray-50">
-                <option>INE (Credencial para Votar)</option>
-                <option>Pasaporte</option>
-            </select>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Nombre Completo</label>
+                    <input type="text" id="input-nombre" required placeholder="Ingresa o corrige el nombre" 
+                        class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition uppercase">
+                </div>
+
+                <div id="alerta" class="hidden text-sm px-4 py-3 rounded-lg font-bold text-center"></div>
+
+                <button type="submit" id="btn-registrar" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex justify-center items-center gap-2 mt-4">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Dar de Alta en Base de Datos
+                </button>
+            </form>
         </div>
+    </div>
 
-        <div class="flex-1 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center bg-gray-100 mb-8 min-h-[200px]">
-            <i data-lucide="camera" class="w-12 h-12 text-institucional-500 mb-3"></i>
-            <p class="text-sm font-medium text-gray-600">Apunta la cámara al documento</p>
-        </div>
+    <script>
+        // --- 1. LÓGICA DE INTELIGENCIA ARTIFICIAL (OCR) ---
+        async function procesarImagen(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        <a href="ciudadano.html" class="w-full bg-institucional-700 hover:bg-institucional-900 text-white font-semibold py-3.5 rounded-xl shadow-lg flex justify-center items-center mt-auto">
-            <i data-lucide="scan" class="mr-2 w-5 h-5"></i> Simular Escaneo Exitoso
-        </a>
-    </main>
-    <script>lucide.createIcons();</script>
+            // Mostrar vista previa y pantalla de carga
+            const preview = document.getElementById('preview-img');
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('hidden');
+            
+            document.getElementById('upload-placeholder').classList.add('hidden');
+            const overlay = document.getElementById('loading-overlay');
+            const textCarga = document.getElementById('loading-text');
+            overlay.classList.remove('hidden');
+
+            try {
+                // Arrancamos Tesseract.js
+                textCarga.innerText = "Analizando texto en la imagen...";
+                const result = await Tesseract.recognize(file, 'spa', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            textCarga.innerText = `Extrayendo datos: ${Math.round(m.progress * 100)}%`;
+                        }
+                    }
+                });
+
+                const textoExtraido = result.data.text;
+                console.log("Texto Crudo de la IA:", textoExtraido); // Para que veas en consola todo lo que leyó
+
+                // Intentamos buscar una CLAVE DE ELECTOR (Suele ser de 18 caracteres alfanuméricos)
+                // O si están usando matrículas universitarias, ajustamos a números.
+                // Esta es una Expresión Regular básica para buscar patrones parecidos a un INE.
+                const posiblesClaves = textoExtraido.match(/[A-Z0-9]{10,18}/g);
+                
+                if (posiblesClaves && posiblesClaves.length > 0) {
+                    // Tomamos la coincidencia más larga que parezca una clave
+                    const claveDetectada = posiblesClaves.reduce((a, b) => a.length > b.length ? a : b);
+                    document.getElementById('input-ine').value = claveDetectada;
+                } else {
+                    mostrarAlerta("IA no encontró una clave clara. Por favor, ingresa manualmente.", "amarillo");
+                }
+
+                // El nombre es muy complejo de aislar con OCR simple sin coordenadas, 
+                // por lo que dejamos que el administrador valide/escriba el nombre por seguridad.
+                document.getElementById('input-nombre').focus();
+
+            } catch (error) {
+                console.error(error);
+                mostrarAlerta("Error al leer la imagen. Intenta con otra foto.", "rojo");
+            } finally {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- 2. LÓGICA DE CONEXIÓN AL BACKEND ---
+        async function registrarCiudadano(event) {
+            event.preventDefault();
+            const ine = document.getElementById('input-ine').value;
+            const nombre = document.getElementById('input-nombre').value;
+            const btn = document.getElementById('btn-registrar');
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div> Guardando...`;
+
+            try {
+                // Llamamos a la ruta que ya tenías programada en tu server.js
+                const respuesta = await fetch('/api/registro-ciudadano', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ine, nombre })
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) throw new Error(datos.error || 'Error al registrar');
+
+                mostrarAlerta(`✅ ¡${nombre} ha sido registrado exitosamente en el padrón!`, "verde");
+                
+                // Limpiar formulario para el siguiente
+                setTimeout(() => {
+                    document.getElementById('form-registro').reset();
+                    document.getElementById('preview-img').classList.add('hidden');
+                    document.getElementById('upload-placeholder').classList.remove('hidden');
+                    document.getElementById('alerta').classList.add('hidden');
+                }, 3000);
+
+            } catch (error) {
+                mostrarAlerta(error.message, "rojo");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Dar de Alta en Base de Datos`;
+            }
+        }
+
+        function mostrarAlerta(mensaje, color) {
+            const alerta = document.getElementById('alerta');
+            alerta.classList.remove('hidden', 'bg-green-500/20', 'text-green-400', 'bg-red-500/20', 'text-red-400', 'bg-yellow-500/20', 'text-yellow-400');
+            
+            if(color === "verde") alerta.classList.add('bg-green-500/20', 'text-green-400', 'border', 'border-green-500');
+            if(color === "rojo") alerta.classList.add('bg-red-500/20', 'text-red-400', 'border', 'border-red-500');
+            if(color === "amarillo") alerta.classList.add('bg-yellow-500/20', 'text-yellow-400', 'border', 'border-yellow-500');
+            
+            alerta.innerText = mensaje;
+        }
+    </script>
 </body>
 </html>
