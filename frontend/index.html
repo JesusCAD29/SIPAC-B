@@ -3,52 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAC-B | Iniciar Sesión</title>
+    <title>SIPAC-B | Emisión de Voto</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: { extend: { colors: { institucional: { 500: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } } }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        /* Estilos para ocultar el radio button por defecto y usar las tarjetas completas como botones */
+        input[type="radio"] { display: none; }
+        input[type="radio"]:checked + div {
+            border-color: #6366f1; /* Indigo 500 */
+            background-color: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
-    </script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
-    <header class="bg-institucional-900 pt-12 pb-6 px-6 text-white text-center shadow-md">
-        <i data-lucide="shield-check" class="w-16 h-16 mx-auto mb-2 text-white"></i>
-        <h1 class="text-3xl font-bold tracking-wider">SIPAC-B</h1>
-        <p class="text-sm text-blue-200 mt-1">Tu voz, tu elección.</p>
-    </header>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex items-center justify-center p-4">
 
-    <main class="flex-1 px-6 py-10 flex flex-col justify-center max-w-md mx-auto w-full">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-8 text-center">Iniciar Sesión</h2>
-        <form action="ciudadano.html" class="space-y-6">
+    <div class="w-full max-w-md bg-slate-800 rounded-[2rem] border border-slate-700 shadow-2xl overflow-hidden relative">
+        
+        <div class="bg-indigo-900/50 p-6 border-b border-indigo-500/30 text-center">
+            <h1 class="text-2xl font-bold text-white tracking-wide">Urna Electrónica</h1>
+            <p class="text-indigo-300 text-sm mt-1">Elecciones SIPAC-B (RF007)</p>
+        </div>
+
+        <form id="form-voto" onsubmit="emitirVoto(event)" class="p-6 md:p-8 flex flex-col gap-6">
+            
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">CURP</label>
-                <div class="relative">
-                    <i data-lucide="user" class="absolute left-3 top-3 h-5 w-5 text-gray-400"></i>
-                    <input type="text" required class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-institucional-500" placeholder="Ej. ABCD123456...">
+                <label for="ine" class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">Identificación Oficial (INE / Matrícula)</label>
+                <input type="text" id="ine" required placeholder="Ej. ABC12345" 
+                    class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider">Selecciona tu Planilla</label>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="cursor-pointer transition-transform duration-200">
+                        <input type="radio" name="candidato" value="Planilla Azul" required>
+                        <div class="border-2 border-slate-700 rounded-xl p-4 text-center transition-all duration-200 hover:bg-slate-700/50 flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                            </div>
+                            <span class="font-bold text-slate-200">Planilla Azul</span>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer transition-transform duration-200">
+                        <input type="radio" name="candidato" value="Planilla Roja" required>
+                        <div class="border-2 border-slate-700 rounded-xl p-4 text-center transition-all duration-200 hover:bg-slate-700/50 flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+                                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            </div>
+                            <span class="font-bold text-slate-200">Planilla Roja</span>
+                        </div>
+                    </label>
                 </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <div class="relative">
-                    <i data-lucide="lock" class="absolute left-3 top-3 h-5 w-5 text-gray-400"></i>
-                    <input type="password" required class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-institucional-500" placeholder="••••••••">
+
+            <div id="alerta-error" class="hidden bg-red-500/20 border border-red-500 text-red-300 text-sm px-4 py-3 rounded-lg text-center font-bold">
                 </div>
-            </div>
-            <button type="submit" class="w-full mt-4 bg-institucional-700 hover:bg-institucional-900 text-white font-semibold py-3.5 rounded-xl shadow-lg transition flex justify-center items-center">
-                Ingresar al sistema <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
+
+            <button type="submit" id="btn-submit" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_15px_rgba(79,70,229,0.5)] transition transform hover:scale-[1.02] active:scale-95 flex justify-center items-center gap-2">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span id="btn-text">Emitir Voto Seguro</span>
             </button>
         </form>
-        <div class="mt-8 text-center flex flex-col space-y-3">
-            <a href="registro.html" class="text-institucional-700 font-semibold text-sm hover:underline">¿No tienes cuenta? Regístrate aquí</a>
-            <div class="pt-4 border-t border-gray-200 mt-4">
-                <p class="text-xs text-gray-400 mb-2">Accesos rápidos para pruebas (Sprint 1):</p>
-                <a href="admin.html" class="text-xs text-gray-600 hover:text-institucional-700 mr-3">Ver Admin</a>
-                <a href="observador.html" class="text-xs text-gray-600 hover:text-institucional-700">Ver Observador</a>
+
+        <div id="pantalla-exito" class="hidden absolute inset-0 bg-slate-800 flex flex-col items-center justify-center p-8 text-center z-10">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.6)]">
+                <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
             </div>
+            <h2 class="text-2xl font-bold text-white mb-2">¡Voto Registrado!</h2>
+            <p class="text-slate-400 mb-6 text-sm">Tu sufragio ha sido encriptado y asegurado en la Blockchain de SIPAC-B.</p>
+            
+            <div class="bg-slate-900 border border-slate-700 w-full rounded-xl p-4 mb-8">
+                <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Tu Folio Anónimo</p>
+                <p id="folio-hash" class="font-mono text-green-400 text-sm break-all font-bold"></p>
+            </div>
+
+            <button onclick="reiniciarUrna()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-xl transition">
+                Siguiente Ciudadano
+            </button>
         </div>
-    </main>
-    <script>lucide.createIcons();</script>
+    </div>
+
+    <script>
+        async function emitirVoto(event) {
+            event.preventDefault(); // Evita que la página recargue al dar submit
+
+            const ine = document.getElementById('ine').value;
+            const candidato = document.querySelector('input[name="candidato"]:checked').value;
+            
+            const btn = document.getElementById('btn-submit');
+            const btnText = document.getElementById('btn-text');
+            const alertaError = document.getElementById('alerta-error');
+
+            // Estado de carga (UX)
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btnText.innerText = "Encriptando en Blockchain...";
+            alertaError.classList.add('hidden');
+
+            try {
+                // Mandamos la petición POST a tu API real
+                const respuesta = await fetch('/api/votar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ine: ine, candidato: candidato })
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    // Si el guardia de seguridad (Backend) lo rebota (ej. Doble voto)
+                    throw new Error(datos.error || 'Error desconocido');
+                }
+
+                // SI TODO SALE BIEN: Mostramos el ticket de éxito
+                document.getElementById('form-voto').classList.add('hidden');
+                document.getElementById('folio-hash').innerText = datos.folio;
+                
+                const pantallaExito = document.getElementById('pantalla-exito');
+                pantallaExito.classList.remove('hidden');
+                
+                // Animación de entrada del ticket
+                anime({
+                    targets: '#pantalla-exito',
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 600,
+                    easing: 'easeOutCubic'
+                });
+
+            } catch (error) {
+                // Mostramos el mensaje rojo de error
+                alertaError.innerText = error.message;
+                alertaError.classList.remove('hidden');
+                
+                // Animación de temblor (Shake)
+                anime({
+                    targets: '#alerta-error',
+                    translateX: [
+                        { value: -10, duration: 50 }, { value: 10, duration: 50 },
+                        { value: -10, duration: 50 }, { value: 10, duration: 50 },
+                        { value: 0, duration: 50 }
+                    ],
+                    easing: 'linear'
+                });
+            } finally {
+                // Devolvemos el botón a la normalidad
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btnText.innerText = "Emitir Voto Seguro";
+            }
+        }
+
+        function reiniciarUrna() {
+            // Limpia el formulario y vuelve a la pantalla inicial
+            document.getElementById('form-voto').reset();
+            document.getElementById('form-voto').classList.remove('hidden');
+            document.getElementById('pantalla-exito').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
