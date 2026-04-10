@@ -143,15 +143,26 @@ app.post('/api/votar', async (req, res) => {
     }
 });
 
-// --- RUTA TEMPORAL PARA EL SPRINT 1 ---
-// Sirve para meter ciudadanos manualmente a la base de datos y poder probar
+// --- RUTA PARA DAR DE ALTA CIUDADANOS (OCR) ---
 app.post('/api/registro-ciudadano', async (req, res) => {
     try {
-        const nuevo = new Ciudadano(req.body);
-        await nuevo.save();
+        // 1. Verificamos que no exista ya en la base de datos
+        const existe = await Ciudadano.findOne({ ine: req.body.ine });
+        if (existe) {
+            return res.status(400).json({ error: 'Esta Clave de Elector ya está registrada.' });
+        }
+
+        // 2. Lo guardamos en MongoDB
+        const nuevoCiudadano = new Ciudadano({
+            nombre: req.body.nombre,
+            ine: req.body.ine
+        });
+        
+        await nuevoCiudadano.save();
         res.json({ mensaje: '✅ Ciudadano registrado en el padrón' });
-    } catch (e) {
-        res.status(400).json({ error: 'Error al registrar o ciudadano ya existe' });
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Error del servidor al guardar el registro' });
     }
 });
 

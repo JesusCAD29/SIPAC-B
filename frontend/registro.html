@@ -98,7 +98,8 @@
                 // Intentamos buscar una CLAVE DE ELECTOR (Suele ser de 18 caracteres alfanuméricos)
                 // O si están usando matrículas universitarias, ajustamos a números.
                 // Esta es una Expresión Regular básica para buscar patrones parecidos a un INE.
-                const posiblesClaves = textoExtraido.match(/[A-Z0-9]{10,18}/g);
+                // Filtro estricto: 6 letras, 8 números, 4 letras/números (Formato INE)
+                const posiblesClaves = textoExtraido.match(/[A-Z]{6}\d{8}[A-Z0-9]{4}/g);
                 
                 if (posiblesClaves && posiblesClaves.length > 0) {
                     // Tomamos la coincidencia más larga que parezca una clave
