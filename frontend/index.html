@@ -57,18 +57,13 @@
                 </button>
             </form>
 
-            <div class="mt-6 text-center text-sm">
-                <a href="#" class="text-blue-600 hover:underline">¿No tienes cuenta? Regístrate aquí</a>
+            <div class="mt-8 text-center text-sm border-t border-slate-200 pt-6">
+                <p class="text-slate-600">¿Eres nuevo en el padrón electoral?</p>
+                <a href="/registro.html" class="inline-block mt-2 font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-colors">
+                    Regístrate y verifica tu identidad aquí
+                </a>
             </div>
 
-            <div class="mt-8 text-center">
-                <p class="text-xs text-slate-400 mb-2">Accesos rápidos para pruebas (Sprint 1):</p>
-                <div class="flex justify-center gap-4 text-xs">
-                    <a href="/admin.html" class="text-slate-500 hover:text-blue-600 hover:underline">Ver Admin</a>
-                    <a href="/observador.html" class="text-slate-500 hover:text-blue-600 hover:underline">Ver Observador</a>
-                    <a href="/registro.html" class="text-slate-500 hover:text-blue-600 hover:underline">Registro IA</a>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -81,7 +76,6 @@
             const errorMsg = document.getElementById('error-msg');
             const btn = document.getElementById('btn-login');
 
-            // Estado de carga
             errorMsg.classList.add('hidden');
             btn.disabled = true;
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
@@ -95,23 +89,19 @@
 
                 const datos = await respuesta.json();
 
-                if (!respuesta.ok) {
-                    throw new Error(datos.error);
-                }
+                if (!respuesta.ok) throw new Error(datos.error);
 
-                // SI EL LOGIN ES EXITOSO:
-                // Guardamos el INE en la memoria del navegador simulando una "sesión"
+                // Guardamos el INE y el Nombre en la memoria temporal
                 sessionStorage.setItem('sesion_ine', datos.ine);
+                sessionStorage.setItem('sesion_nombre', datos.nombre);
                 
-                // Redirigimos automáticamente a la Urna Electrónica (boleta.html)
-                window.location.href = '/boleta.html';
+                // 🛑 CORRECCIÓN: Redirigimos al archivo original
+                window.location.href = '/ciudadano.html';
 
             } catch (error) {
-                // Si falla (no existe o ya votó), mostramos el error
                 errorMsg.innerText = error.message;
                 errorMsg.classList.remove('hidden');
             } finally {
-                // Restaurar botón
                 btn.disabled = false;
                 btn.innerHTML = `Ingresar al sistema <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>`;
             }

@@ -74,9 +74,9 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: '❌ Usuario no encontrado en el padrón.' });
         }
 
-        // 2. Simulamos la validación de contraseña (para pruebas del prototipo)
-        if (password !== '12345') {
-            return res.status(401).json({ error: '❌ Contraseña incorrecta. (Para pruebas usa: 12345)' });
+        // 2. VALIDACIÓN DE SEGURIDAD REAL: Comparamos contra la BD
+        if (votante.password !== password) {
+            return res.status(401).json({ error: '❌ Contraseña incorrecta.' });
         }
 
         // 3. REGLA DE ORO: Si ya votó, no lo dejamos ni entrar a la cabina
@@ -152,10 +152,11 @@ app.post('/api/registro-ciudadano', async (req, res) => {
             return res.status(400).json({ error: 'Esta Clave de Elector ya está registrada.' });
         }
 
-        // 2. Lo guardamos en MongoDB
+        // 2. Lo guardamos en MongoDB (Ahora con contraseña)
         const nuevoCiudadano = new Ciudadano({
             nombre: req.body.nombre,
-            ine: req.body.ine
+            ine: req.body.ine,
+            password: req.body.password // <-- GUARDANDO LA CONTRASEÑA REAL
         });
         
         await nuevoCiudadano.save();
