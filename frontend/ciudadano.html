@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPAC-B | Panel Ciudadano</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-slate-50 font-sans min-h-screen flex flex-col">
 
     <header class="bg-[#153b8e] px-6 pt-8 pb-8 shadow-md text-white w-full">
@@ -14,48 +16,53 @@
                 <p class="text-sm text-blue-200/80 mb-0.5">BIENVENIDO(A)</p>
                 <h1 id="nombre-ciudadano" class="text-xl md:text-3xl font-bold tracking-wide">CARGANDO...</h1>
             </div>
-            <div class="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-inner shrink-0">
-                <svg class="w-6 h-6 md:w-7 md:h-7 text-[#153b8e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            <div
+                class="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center shadow-inner shrink-0">
+                <svg class="w-6 h-6 md:w-7 md:h-7 text-[#153b8e]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
             </div>
         </div>
     </header>
 
     <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-8 pb-32">
-        <div class="max-w-3xl">
-            <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 mb-6 uppercase tracking-tight">Procesos Electorales Vigentes</h2>
+        <div class="max-w-7xl">
+            <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 mb-6 uppercase tracking-tight">Procesos
+                Electorales Vigentes</h2>
 
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-200 p-6 relative overflow-hidden transition-all duration-300 flex flex-col max-w-xl">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider">Abierta</span>
-                    <svg class="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                </div>
-                
-                <h3 class="font-bold text-slate-800 text-xl md:text-2xl leading-tight mb-2">Presupuesto Participativo 2026</h3>
-                <p class="text-slate-500 text-sm md:text-base mb-8 leading-relaxed">
-                    Usted ha sido identificado como ciudadano apto para participar en esta consulta. 
-                    Su voto será encriptado y registrado de forma anónima en la Blockchain de SIPAC-B.
-                </p>
-                
-                <button onclick="irABoleta()" class="w-full bg-[#2563eb] hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md transition transform hover:-translate-y-0.5 active:scale-95">
-                    Participar Ahora
-                </button>
+            <div id="contenedor-elecciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-slate-500 italic animate-pulse">Buscando procesos electorales disponibles...</p>
             </div>
+
         </div>
     </main>
 
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50">
         <div class="max-w-7xl mx-auto flex justify-around items-center pt-3 pb-6 md:pb-4">
             <button class="flex flex-col items-center text-[#153b8e] gap-1 px-4 transition transform hover:scale-110">
-                <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3l8 6v12h-5v-7H9v7H4V9l8-6z"/></svg>
+                <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3l8 6v12h-5v-7H9v7H4V9l8-6z" />
+                </svg>
                 <span class="text-[10px] md:text-xs font-bold uppercase">Inicio</span>
             </button>
-            <button class="flex flex-col items-center text-slate-400 hover:text-slate-600 gap-1 px-4 transition transform hover:scale-110">
-                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            <button
+                class="flex flex-col items-center text-slate-400 hover:text-slate-600 gap-1 px-4 transition transform hover:scale-110">
+                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 <span class="text-[10px] md:text-xs font-medium uppercase">Recibos</span>
             </button>
-            <button class="flex flex-col items-center text-slate-400 hover:text-slate-600 gap-1 px-4 transition transform hover:scale-110 relative">
-                <div class="absolute top-0 right-3 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border-2 border-white"></div>
-                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+            <button
+                class="flex flex-col items-center text-slate-400 hover:text-slate-600 gap-1 px-4 transition transform hover:scale-110 relative">
+                <div
+                    class="absolute top-0 right-3 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border-2 border-white">
+                </div>
+                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
                 <span class="text-[10px] md:text-xs font-medium uppercase">Alertas</span>
             </button>
         </div>
@@ -67,25 +74,71 @@
             const ineSesion = sessionStorage.getItem('sesion_ine');
 
             // Seguridad: Si no hay sesión iniciada, expulsar al login
-            if(!ineSesion) {
+            if (!ineSesion) {
                 window.location.href = '/';
                 return;
             }
 
-            // Normalización estricta del nombre (Mayúsculas y Sin Acentos)
-            if(nombreSesion) {
+            // Normalización estricta del nombre
+            if (nombreSesion) {
                 const nombreNormalizado = nombreSesion
-                    .normalize("NFD")                   // Descompone caracteres (á -> a + ´)
-                    .replace(/[\u0300-\u036f]/g, "")    // Elimina las marcas de acento
-                    .toUpperCase();                     // Todo a mayúsculas
-                    
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toUpperCase();
+
                 document.getElementById('nombre-ciudadano').innerText = nombreNormalizado;
             }
+
+            // LLAMADA A LA BASE DE DATOS
+            cargarEleccionesReales();
         });
 
-        function irABoleta() {
+        // FUNCIÓN QUE EXTRAE LAS ELECCIONES DE LA BASE DE DATOS
+        async function cargarEleccionesReales() {
+            try {
+                const res = await fetch('/api/elecciones/activas');
+                const elecciones = await res.json();
+
+                const contenedor = document.getElementById('contenedor-elecciones');
+                contenedor.innerHTML = ''; // Limpiamos el mensaje de "Buscando..."
+
+                if (elecciones.length === 0) {
+                    contenedor.innerHTML = '<p class="text-slate-500 col-span-full">No hay procesos electorales activos en este momento. Por favor, vuelva más tarde.</p>';
+                    return;
+                }
+
+                // Dibujamos una tarjeta por cada elección encontrada
+                elecciones.forEach(el => {
+                    contenedor.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-200 p-6 relative overflow-hidden transition-all duration-300 flex flex-col">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wider">Abierta</span>
+                                <svg class="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            
+                            <h3 class="font-bold text-slate-800 text-xl md:text-2xl leading-tight mb-2">${el.titulo}</h3>
+                            <p class="text-slate-500 text-sm md:text-base mb-8 leading-relaxed flex-grow">
+                                ${el.descripcion}
+                            </p>
+                            
+                            <button onclick="irABoleta('${el._id}', '${el.opciones.join('|')}')" class="w-full bg-[#2563eb] hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md transition transform hover:-translate-y-0.5 active:scale-95">
+                                Participar Ahora
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                document.getElementById('contenedor-elecciones').innerHTML = '<p class="text-red-500">Error al cargar los procesos electorales. Revise la conexión al servidor.</p>';
+            }
+        }
+
+        // FUNCIÓN DE REDIRECCIÓN A LA URNA
+        function irABoleta(eleccionId, opcionesStr) {
+            // Guardamos las opciones específicas de esta elección para que la Boleta las pueda dibujar
+            if (opcionesStr) sessionStorage.setItem('eleccion_opciones', opcionesStr);
             window.location.href = '/boleta.html';
         }
     </script>
 </body>
+
 </html>

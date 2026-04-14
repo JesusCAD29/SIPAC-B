@@ -12,7 +12,7 @@
 
     <div class="flex flex-col lg:flex-row min-h-screen">
 
-        <aside class="w-full lg:w-64 bg-slate-800 border-r border-slate-700 p-6">
+        <aside class="w-full lg:w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col">
             <div class="flex items-center gap-3 mb-10">
                 <div class="bg-indigo-600 p-2 rounded-lg">
                     <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,7 +24,7 @@
                         class="text-indigo-400 text-xs block">ADMIN</span></h1>
             </div>
 
-            <nav class="space-y-2">
+            <nav class="space-y-2 flex-grow">
                 <a href="#"
                     class="flex items-center gap-3 bg-indigo-600/10 text-indigo-400 px-4 py-3 rounded-xl font-bold">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,22 +53,68 @@
         <main class="flex-grow p-6 lg:p-10">
             <div class="max-w-6xl mx-auto">
 
-                <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white">Gestión del Padrón</h2>
-                        <p class="text-slate-400">Monitoreo de ciudadanos registrados y estado de participación.</p>
+                <header class="mb-8">
+                    <h2 class="text-3xl font-bold text-white">Centro de Mando Electoral</h2>
+                    <p class="text-slate-400">Creación de procesos y monitoreo de ciudadanos.</p>
+                </header>
+
+                <div
+                    class="bg-slate-800 p-6 md:p-8 rounded-2xl border border-slate-700 mb-10 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                    <h3 class="text-xl font-bold text-white mb-2">Configurar Nuevo Proceso Electoral</h3>
+                    <p class="text-slate-400 text-sm mb-6">Esta elección será visible inmediatamente para los ciudadanos
+                        en su panel de votación.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label
+                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Título
+                                de la Elección</label>
+                            <input type="text" id="el-titulo" placeholder="Ej. Elección de Delegado 2026"
+                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Opciones
+                                (Separadas por coma)</label>
+                            <input type="text" id="el-opciones"
+                                placeholder="Ej. Planilla Roja, Planilla Azul, Abstención"
+                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Descripción
+                                del Proceso</label>
+                            <textarea id="el-desc" placeholder="Explica a los ciudadanos de qué trata esta votación..."
+                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition h-24 resize-none"></textarea>
+                        </div>
                     </div>
+
+                    <div class="mt-6 flex justify-end">
+                        <button id="btn-crear-eleccion" onclick="crearEleccion()"
+                            class="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-green-600/20">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Publicar Elección
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-white">Monitoreo del Padrón</h3>
                     <button onclick="cargarPadron()"
-                        class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-sm">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                         Sincronizar Datos
                     </button>
-                </header>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
                         <p class="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Total Ciudadanos</p>
                         <h3 id="stat-total" class="text-4xl font-black text-white">--</h3>
@@ -113,6 +159,50 @@
     </div>
 
     <script>
+        // === LÓGICA PARA CREAR ELECCIONES ===
+        async function crearEleccion() {
+            const titulo = document.getElementById('el-titulo').value.trim();
+            const desc = document.getElementById('el-desc').value.trim();
+            const opcionesStr = document.getElementById('el-opciones').value.trim();
+
+            if (!titulo || !desc || !opcionesStr) {
+                alert("⚠️ Por favor, llena todos los campos antes de publicar.");
+                return;
+            }
+
+            // Convertimos la cadena "Azul, Roja" en un arreglo real ['Azul', 'Roja']
+            const opciones = opcionesStr.split(',').map(o => o.trim()).filter(o => o !== "");
+
+            const btn = document.getElementById('btn-crear-eleccion');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = `<span class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span> Publicando...`;
+            btn.disabled = true;
+
+            try {
+                const respuesta = await fetch('/api/elecciones', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo, descripcion: desc, opciones })
+                });
+
+                if (respuesta.ok) {
+                    alert("✅ Proceso electoral publicado. Los ciudadanos ya pueden verlo.");
+                    // Limpiamos los campos
+                    document.getElementById('el-titulo').value = '';
+                    document.getElementById('el-desc').value = '';
+                    document.getElementById('el-opciones').value = '';
+                } else {
+                    alert("❌ Ocurrió un error al guardar la elección en la base de datos.");
+                }
+            } catch (error) {
+                alert("❌ Error de conexión con el servidor.");
+            } finally {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        // === LÓGICA PARA CARGAR EL PADRÓN ===
         async function cargarPadron() {
             try {
                 const respuesta = await fetch('/api/padron');

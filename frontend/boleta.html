@@ -1,174 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPAC-B | Urna Electrónica</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-[#1a1c2e] font-sans min-h-screen flex items-center justify-center p-4 relative">
 
-    <div id="urna-container" class="w-full max-w-md bg-[#252843] rounded-2xl shadow-2xl overflow-hidden border border-slate-700/50">
-        
+    <div id="urna-container"
+        class="w-full max-w-md bg-[#252843] rounded-2xl shadow-2xl overflow-hidden border border-slate-700/50">
+
         <div class="bg-[#2d3154] py-6 text-center border-b border-slate-700/50 relative">
             <h1 class="text-2xl font-bold text-white">Urna Electrónica</h1>
-            <p class="text-indigo-300 text-sm mt-1">Elecciones SIPAC-B (RF007)</p>
-            
-            <button onclick="cerrarSesion()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            <p class="text-indigo-300 text-sm mt-1">Elecciones SIPAC-B</p>
+
+            <button onclick="cerrarSesion()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"
+                title="Salir">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
             </button>
         </div>
 
         <div class="p-6 md:p-8">
-            
+
             <div class="mb-6 bg-slate-900/50 rounded-xl p-4 border border-slate-700/30 flex items-center gap-4">
                 <div class="bg-indigo-500/20 p-2.5 rounded-full shrink-0">
-                    <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
                 </div>
                 <div class="overflow-hidden">
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Credencial Verificada</p>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Credencial
+                        Verificada</p>
                     <p id="display-nombre" class="text-sm font-bold text-slate-200 truncate">Cargando identidad...</p>
                     <p id="display-ine" class="text-xs text-indigo-300 font-mono mt-0.5"></p>
                 </div>
             </div>
 
-            <h2 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">Selecciona tu planilla</h2>
-            
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <label class="cursor-pointer group">
-                    <input type="radio" name="candidato" value="Planilla Azul" class="peer hidden">
-                    <div class="bg-[#1f2238] border-2 border-[#363b5e] rounded-xl p-5 flex flex-col items-center text-center transition-all peer-checked:border-blue-500 peer-checked:bg-blue-500/10 group-hover:border-blue-400">
-                        <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
-                            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        </div>
-                        <span class="font-bold text-slate-200 text-sm">Planilla Azul</span>
-                    </div>
-                </label>
+            <h2 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">Selecciona tu opción</h2>
 
-                <label class="cursor-pointer group">
-                    <input type="radio" name="candidato" value="Planilla Roja" class="peer hidden">
-                    <div class="bg-[#1f2238] border-2 border-[#363b5e] rounded-xl p-5 flex flex-col items-center text-center transition-all peer-checked:border-red-500 peer-checked:bg-red-500/10 group-hover:border-red-400">
-                        <div class="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-red-500/30">
-                            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        </div>
-                        <span class="font-bold text-slate-200 text-sm">Planilla Roja</span>
-                    </div>
-                </label>
+            <div id="contenedor-opciones" class="grid grid-cols-2 gap-4 mb-8">
+                <p class="text-slate-500 text-xs col-span-2 text-center animate-pulse">Cargando opciones de voto...</p>
             </div>
 
-            <div id="msg-error" class="hidden mb-4 text-center text-red-400 text-sm font-medium bg-red-400/10 py-2.5 rounded-lg border border-red-500/20"></div>
+            <div id="msg-error"
+                class="hidden mb-4 text-center text-red-400 text-sm font-medium bg-red-400/10 py-2.5 rounded-lg border border-red-500/20">
+            </div>
 
-            <button id="btn-votar" onclick="emitirVoto()" class="w-full bg-[#524de1] hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition shadow-[0_4px_15px_rgba(82,77,225,0.4)] flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+            <button id="btn-votar" onclick="emitirVoto()"
+                class="w-full bg-[#524de1] hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition shadow-[0_4px_15px_rgba(82,77,225,0.4)] flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
                 <span>Emitir Voto Seguro</span>
             </button>
-            
+
         </div>
     </div>
 
-    <div id="pantalla-exito" class="hidden absolute inset-0 bg-[#0f172a]/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm z-50">
+    <div id="pantalla-exito"
+        class="hidden absolute inset-0 bg-[#0f172a]/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm z-50">
         <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border border-green-500/30">
             <div class="mx-auto w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                <svg class="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                <svg class="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
             </div>
             <h2 class="text-2xl font-bold text-white mb-2">Voto Blindado</h2>
-            <p class="text-slate-400 text-sm mb-6">Tu decisión ha sido encriptada y sellada en la Blockchain de SIPAC-B.</p>
-            
+            <p class="text-slate-400 text-sm mb-6">Tu decisión ha sido encriptada y sellada en la Blockchain de SIPAC-B.
+            </p>
+
             <div class="bg-slate-900 p-4 rounded-lg mb-8 break-all">
                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Hash de Verificación (Guárdalo)</p>
                 <p id="hash-voto" class="text-green-400 font-mono text-xs"></p>
             </div>
 
-            <button onclick="cerrarSesion()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">
+            <button onclick="cerrarSesion()"
+                class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">
                 Finalizar y Salir
             </button>
         </div>
     </div>
 
     <script>
-        // Variables globales para la sesión
         let ineSesion = null;
         let nombreSesion = null;
+        let opcionesVoto = [];
 
-        // 1. INICIALIZACIÓN Y SEGURIDAD AL CARGAR LA PÁGINA
         document.addEventListener('DOMContentLoaded', () => {
             ineSesion = sessionStorage.getItem('sesion_ine');
             nombreSesion = sessionStorage.getItem('sesion_nombre');
 
-            // Ciberseguridad: Si alguien intenta entrar sin hacer login, lo bloqueamos
-            if (!ineSesion) {
-                alert("Acceso denegado. Debes iniciar sesión primero.");
+            // 1. Extraemos las opciones de la elección (Ej: "Planilla Azul|Planilla Roja")
+            const opcionesStr = sessionStorage.getItem('eleccion_opciones');
+
+            if (!ineSesion || !opcionesStr) {
+                alert("Acceso denegado o sesión expirada.");
                 window.location.href = '/';
                 return;
             }
 
-            // Normalizamos el nombre igual que en el dashboard para consistencia visual
+            // 2. Normalizamos la identidad visual
             let nombreMostrar = "CIUDADANO";
             if (nombreSesion) {
                 nombreMostrar = nombreSesion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
             }
-
-            // Mostramos los datos de manera elegante, sin inputs que se puedan editar
             document.getElementById('display-nombre').innerText = nombreMostrar;
             document.getElementById('display-ine').innerText = `ID: ${ineSesion}`;
+
+            // 3. GENERACIÓN DINÁMICA DE LAS OPCIONES DE VOTO
+            opcionesVoto = opcionesStr.split('|');
+            dibujarOpciones(opcionesVoto);
         });
 
-        // 2. FUNCIÓN PARA CERRAR SESIÓN (Limpiar memoria)
+        // FUNCIÓN QUE DIBUJA LAS TARJETAS DE LOS CANDIDATOS
+        function dibujarOpciones(opciones) {
+            const contenedor = document.getElementById('contenedor-opciones');
+            contenedor.innerHTML = ''; // Limpiar mensaje de carga
+
+            // Colores por defecto para ir asignando si no dicen específicamente "Rojo" o "Azul"
+            const paletaColores = ['blue', 'red', 'green', 'purple', 'yellow', 'pink'];
+
+            opciones.forEach((opcionTexto, index) => {
+                const nombreSeguro = opcionTexto.replace(/\s+/g, '_').toLowerCase(); // Para el ID interno
+                const opcionLimpia = opcionTexto.toUpperCase(); // Para mostrar en pantalla
+
+                // Lógica de colores simple:
+                let color = paletaColores[index % paletaColores.length];
+
+                // Si la opción dice "Abstención" o "Nulo", la ponemos gris
+                if (opcionLimpia.includes('ABST') || opcionLimpia.includes('NULO')) {
+                    color = 'slate';
+                } else if (opcionLimpia.includes('AZUL')) {
+                    color = 'blue';
+                } else if (opcionLimpia.includes('ROJA') || opcionLimpia.includes('ROJO')) {
+                    color = 'red';
+                } else if (opcionLimpia.includes('VERDE')) {
+                    color = 'green';
+                }
+
+                // Plantilla HTML de la tarjeta inyectable
+                const tarjeta = `
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="candidato" value="${opcionTexto}" class="peer hidden">
+                        <div class="h-full bg-[#1f2238] border-2 border-[#363b5e] rounded-xl p-5 flex flex-col items-center justify-center text-center transition-all peer-checked:border-${color}-500 peer-checked:bg-${color}-500/10 group-hover:border-${color}-400">
+                            
+                            <div class="w-14 h-14 bg-${color}-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-${color}-500/30">
+                                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            
+                            <span class="font-bold text-slate-200 text-sm leading-tight">${opcionTexto}</span>
+                        </div>
+                    </label>
+                `;
+                contenedor.innerHTML += tarjeta;
+            });
+        }
+
         function cerrarSesion() {
             sessionStorage.clear();
             window.location.href = '/';
         }
 
-        // 3. ENVÍO DEL VOTO A MONGODB/BLOCKCHAIN
         async function emitirVoto() {
             const candidatoSeleccionado = document.querySelector('input[name="candidato"]:checked');
             const msgError = document.getElementById('msg-error');
             const btnVotar = document.getElementById('btn-votar');
 
             if (!candidatoSeleccionado) {
-                msgError.innerText = '⚠️ Por favor, selecciona una planilla antes de votar.';
+                msgError.innerText = '⚠️ Por favor, selecciona una opción antes de votar.';
                 msgError.classList.remove('hidden');
                 return;
             }
 
             msgError.classList.add('hidden');
-            
-            // Animación de carga
             btnVotar.disabled = true;
-            btnVotar.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Encriptando voto...`;
+            btnVotar.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Encriptando...`;
 
             try {
-                // Hacemos el envío de datos usando el ineSesion que sacamos de la memoria oculta
                 const respuesta = await fetch('/api/votar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        ine: ineSesion, 
-                        candidato: candidatoSeleccionado.value 
+                    body: JSON.stringify({
+                        ine: ineSesion,
+                        // Enviamos exactamente la opción que seleccionó
+                        candidato: candidatoSeleccionado.value
                     })
                 });
 
                 const datos = await respuesta.json();
 
-                if (!respuesta.ok) {
-                    throw new Error(datos.error);
-                }
+                if (!respuesta.ok) throw new Error(datos.error);
 
-                // Si todo sale bien, ocultamos la urna y mostramos el Hash de éxito
                 document.getElementById('urna-container').classList.add('hidden');
                 document.getElementById('hash-voto').innerText = datos.folio;
                 document.getElementById('pantalla-exito').classList.remove('hidden');
 
             } catch (error) {
-                // Manejo de errores (por ejemplo, si intenta votar dos veces)
                 msgError.innerText = error.message;
                 msgError.classList.remove('hidden');
-                
-                // Restaurar botón
+
                 btnVotar.disabled = false;
-                btnVotar.innerHTML = `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> <span>Emitir Voto Seguro</span>`;
+                btnVotar.innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> <span>Emitir Voto Seguro</span>`;
             }
         }
     </script>
 </body>
+
 </html>
