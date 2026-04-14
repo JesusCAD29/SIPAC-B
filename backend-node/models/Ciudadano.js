@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 
 const CiudadanoSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
-    ine: { type: String, required: true, unique: true }, // El identificador oficial (CURP o Matrícula)
-    password: { type: String, required: true }, // <-- ¡AQUÍ ESTÁ LA LLAVE DE ACCESO!
-    haVotado: { type: Boolean, default: false }, // El interruptor de seguridad contra doble voto
+    ine: { type: String, required: true, unique: true }, 
+    password: { type: String, required: true }, 
+    haVotado: { type: Boolean, default: false }, 
+    // NUEVO CAMPO: Define los permisos en el sistema
+    rol: { type: String, default: 'ciudadano' }, 
     fechaRegistro: { type: Date, default: Date.now }
 });
 

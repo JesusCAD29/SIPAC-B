@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
+const Eleccion = require('./models/Eleccion');
 require('dotenv').config();
 
 const { Bloque, Blockchain } = require('./services/blockchain');
@@ -25,13 +26,13 @@ let urnaElecciones = new Blockchain();
 mongoose.connect(MONGO_URI)
     .then(async () => {
         console.log('🟢 Conectado exitosamente a MongoDB Atlas');
-        
+
         // Sincronizar la memoria con la base de datos
         const votosEnDB = await Voto.find().sort({ index: 1 });
 
         if (votosEnDB.length > 0) {
             console.log(`📦 Cargando ${votosEnDB.length} bloques desde la nube...`);
-            
+
             // 🛠️ LA SOLUCIÓN: Rehidratar los bloques perdidos
             urnaElecciones.chain = votosEnDB.map(doc => {
                 // 1. Limpiamos el formato de Mongoose a un objeto Javascript normal
@@ -62,37 +63,84 @@ app.get('/api/blockchain', (req, res) => {
 // Importamos el modelo de Ciudadano arriba de tu server.js
 const Ciudadano = require('./models/Ciudadano');
 
-// --- RUTA DE AUTENTICACIÓN (LOGIN) ---
+// --- RUTA PARA CONSULTAR EL PADRÓN ELECTORAL (Solo Administración) ---
+app.get('/api/padron', async (req, res) => {
+    try {
+        // Obtenemos todos los ciudadanos, pero ocultamos sus contraseñas por seguridad
+        const ciudadanos = await Ciudadano.find().select('-password').sort({ fechaRegistro: -1 });
+        res.json(ciudadanos);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener los datos del padrón' });
+    }
+});
+
+// --- RUTA DE AUTENTICACIÓN (LOGIN CON ROLES) ---
 app.post('/api/login', async (req, res) => {
     const { identificador, password } = req.body;
 
     try {
-        // 1. Buscamos si la persona existe en MongoDB
-        const votante = await Ciudadano.findOne({ ine: identificador });
+        const usuario = await Ciudadano.findOne({ ine: identificador });
 
-        if (!votante) {
+        if (!usuario) {
             return res.status(401).json({ error: '❌ Usuario no encontrado en el padrón.' });
         }
 
-        // 2. VALIDACIÓN DE SEGURIDAD REAL: Comparamos contra la BD
-        if (votante.password !== password) {
+        if (usuario.password !== password) {
             return res.status(401).json({ error: '❌ Contraseña incorrecta.' });
         }
 
-        // 3. REGLA DE ORO: Si ya votó, no lo dejamos ni entrar a la cabina
-        if (votante.haVotado) {
-            return res.status(403).json({ error: '⚠️ Ya has ejercido tu voto en este proceso electoral.' });
+        // BIFURCACIÓN DE ROLES (RBAC)
+        if (usuario.rol === 'admin') {
+            // Es Administrador: Le damos pase directo al Panel Admin
+            return res.json({
+                mensaje: 'Acceso de Administrador',
+                ine: usuario.ine,
+                nombre: usuario.nombre,
+                rol: usuario.rol,
+                redirect: '/admin.html' // <-- Ruta de destino dinámica
+            });
+        } else {
+            // Es Ciudadano: Revisamos si ya votó
+            if (usuario.haVotado) {
+                return res.status(403).json({ error: '⚠️ Ya has ejercido tu voto en este proceso electoral.' });
+            }
+            // Luz verde para votar
+            return res.json({
+                mensaje: 'Acceso Ciudadano',
+                ine: usuario.ine,
+                nombre: usuario.nombre,
+                rol: usuario.rol,
+                redirect: '/ciudadano.html' // <-- Ruta de destino dinámica
+            });
         }
-
-        // 4. Todo OK, damos luz verde
-        res.json({ 
-            mensaje: 'Acceso concedido', 
-            ine: votante.ine, 
-            nombre: votante.nombre 
-        });
 
     } catch (error) {
         res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// --- RUTA: CREAR ELECCIÓN (Solo Admin) ---
+app.post('/api/elecciones', async (req, res) => {
+    try {
+        const nuevaEleccion = new Eleccion({
+            titulo: req.body.titulo,
+            descripcion: req.body.descripcion,
+            opciones: req.body.opciones
+        });
+        await nuevaEleccion.save();
+        res.json({ mensaje: '✅ Proceso electoral creado exitosamente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear la elección' });
+    }
+});
+
+// --- RUTA: OBTENER ELECCIONES ACTIVAS ---
+app.get('/api/elecciones/activas', async (req, res) => {
+    try {
+        const elecciones = await Eleccion.find({ activa: true });
+        res.json(elecciones);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener elecciones' });
     }
 });
 
@@ -133,9 +181,9 @@ app.post('/api/votar', async (req, res) => {
         votante.haVotado = true;
         await votante.save();
 
-        res.json({ 
-            mensaje: '✅ Voto registrado y blindado exitosamente', 
-            folio: folioAnonimo 
+        res.json({
+            mensaje: '✅ Voto registrado y blindado exitosamente',
+            folio: folioAnonimo
         });
 
     } catch (error) {
@@ -158,10 +206,10 @@ app.post('/api/registro-ciudadano', async (req, res) => {
             ine: req.body.ine,
             password: req.body.password // <-- GUARDANDO LA CONTRASEÑA REAL
         });
-        
+
         await nuevoCiudadano.save();
         res.json({ mensaje: '✅ Ciudadano registrado en el padrón' });
-        
+
     } catch (error) {
         res.status(500).json({ error: 'Error del servidor al guardar el registro' });
     }
