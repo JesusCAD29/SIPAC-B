@@ -216,6 +216,10 @@
             }
         }
 
+        // Variables globales para el mapa
+        let mapaIniciado = false;
+        let mapa;
+
         // === LÓGICA PARA CARGAR EL PADRÓN ===
         async function cargarPadron() {
             try {
@@ -235,9 +239,16 @@
                 tabla.innerHTML = '';
 
                 let totalVotaron = 0;
+                let puntosCalor = []; // Arreglo para guardar las coordenadas
 
                 ciudadanos.forEach(c => {
                     if (c.haVotado) totalVotaron++;
+
+                    // 🗺️ EXTRAEMOS LAS COORDENADAS PARA EL MAPA
+                    if (c.coordenadas && c.coordenadas.lat && c.coordenadas.lng) {
+                        // Guardamos formato: [latitud, longitud, intensidad]
+                        puntosCalor.push([c.coordenadas.lat, c.coordenadas.lng, 1]);
+                    }
 
                     const fecha = new Date(c.fechaRegistro).toLocaleDateString('es-MX', {
                         year: 'numeric', month: 'short', day: 'numeric'
@@ -263,6 +274,38 @@
                 document.getElementById('stat-total').innerText = total;
                 document.getElementById('stat-votaron').innerText = totalVotaron;
                 document.getElementById('stat-porcentaje').innerText = total > 0 ? Math.round((totalVotaron / total) * 100) : 0;
+
+                // === 🗺️ DIBUJAR MAPA DE CALOR ===
+                // 1. Inicializamos el contenedor solo la primera vez
+                if (!mapaIniciado) {
+                    // Centramos el mapa en Pachuca (Lat, Lng, Zoom)
+                    mapa = L.map('mapa-calor').setView([20.1011, -98.7591], 12);
+                    
+                    // Cargamos una textura de mapa oscuro para que combine con el diseño
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '© OpenStreetMap contributors',
+                        maxZoom: 18
+                    }).addTo(mapa);
+                    
+                    mapaIniciado = true;
+                }
+
+                // 2. Limpiamos capas viejas por si el administrador le da a "Sincronizar"
+                mapa.eachLayer((layer) => {
+                    if (layer.options && layer.options.blur) {
+                        mapa.removeLayer(layer);
+                    }
+                });
+
+                // 3. Pintamos los puntos de calor
+                if (puntosCalor.length > 0) {
+                    L.heatLayer(puntosCalor, {
+                        radius: 25, // Tamaño de la mancha
+                        blur: 15,   // Difuminado
+                        maxZoom: 14,
+                        gradient: {0.4: 'blue', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red'}
+                    }).addTo(mapa);
+                }
 
             } catch (error) {
                 console.error("Error de conexión:", error);

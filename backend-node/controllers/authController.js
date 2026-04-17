@@ -2,6 +2,23 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Ciudadano = require('../models/Ciudadano');
 
+// FUNCIÓN AUXILIAR: Geocodificación real con OpenStreetMap
+async function obtenerCoordenadas(cp) {
+    try {
+        // Hacemos la consulta a la API gratuita de Nominatim
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${cp}&country=Mexico&format=json`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        }
+    } catch (error) {
+        console.log("⚠️ Error en Geocodificación:", error.message);
+    }
+    // Fallback: Si el CP no existe o la API falla, lo centramos en Pachuca por defecto
+    return { lat: 20.1011 + (Math.random() - 0.5) * 0.05, lng: -98.7591 + (Math.random() - 0.5) * 0.05 };
+}
+
 exports.registro = async (req, res) => {
     try {
         const existe = await Ciudadano.findOne({ ine: req.body.ine });
@@ -10,15 +27,20 @@ exports.registro = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
+        // 🗺️ OBTENEMOS LAS COORDENADAS ANTES DE GUARDAR
+        const coords = await obtenerCoordenadas(req.body.cp);
+
         const nuevoCiudadano = new Ciudadano({
             nombre: req.body.nombre,
             ine: req.body.ine,
             password: hashedPassword,
+            codigoPostal: req.body.cp,      // Guardamos el CP real
+            coordenadas: coords,            // Guardamos latitud y longitud
             rol: 'ciudadano'
         });
 
         await nuevoCiudadano.save();
-        res.json({ mensaje: '✅ Ciudadano registrado en el padrón' });
+        res.json({ mensaje: '✅ Ciudadano registrado con éxito (Ubicación mapeada)' });
     } catch (error) {
         res.status(500).json({ error: 'Error del servidor al guardar el registro' });
     }
