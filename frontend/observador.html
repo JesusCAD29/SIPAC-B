@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPAC-B | Observador Blockchain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
 </head>
 
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
@@ -106,10 +107,27 @@
     </div>
 
     <script>
+        // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificamos que haya token y que el rol sea 'admin'
+            if (!verificarAccesoProtegido('admin')) return; 
+
+            // Si el guardia lo dejó pasar, cargamos los datos
+            cargarBlockchain();
+        });
+
         async function cargarBlockchain() {
             try {
-                // 1. Llamamos a tu API de Node.js
-                const respuesta = await fetch('/api/blockchain');
+                // AHORA USAMOS FETCH PROTEGIDO PARA ENVIAR EL TOKEN AL SERVIDOR
+                const respuesta = await fetchProtegido('/api/blockchain');
+                
+                // Si el token es inválido o ya expiró (pasaron las 8 horas)
+                if (respuesta.status === 401 || respuesta.status === 403) {
+                    cerrarSesionGlobal();
+                    return;
+                }
+
+                // Solo leemos el JSON si pasamos la aduana de seguridad
                 const datos = await respuesta.json();
 
                 // 2. Actualizamos los contadores de arriba
@@ -158,9 +176,6 @@
                 `;
             }
         }
-
-        // Ejecutar la función en cuanto abra la página
-        cargarBlockchain();
     </script>
 </body>
 

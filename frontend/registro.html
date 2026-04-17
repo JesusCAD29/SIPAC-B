@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
+
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-0 md:p-8 flex justify-center items-center">
 
-    <div class="w-full h-screen md:h-auto md:min-h-[600px] max-w-4xl bg-slate-800 md:rounded-3xl rounded-none md:border border-slate-700 md:shadow-2xl overflow-hidden relative flex flex-col">
-        
+    <div
+        class="w-full h-screen md:h-auto md:min-h-[600px] max-w-4xl bg-slate-800 md:rounded-3xl rounded-none md:border border-slate-700 md:shadow-2xl overflow-hidden relative flex flex-col">
+
         <div class="bg-slate-900/80 border-b border-slate-700 p-4 md:p-6 flex justify-between items-center shrink-0">
             <div>
                 <h1 class="text-lg md:text-xl font-bold text-white">Registro SIPAC-B</h1>
                 <p class="text-xs text-slate-400">Verificación de Identidad (KYC)</p>
             </div>
             <div class="flex gap-2" id="indicadores-pasos">
-                <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" id="dot-1"></div>
+                <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"
+                    id="dot-1"></div>
                 <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-slate-600" id="dot-2"></div>
                 <div class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-slate-600" id="dot-3"></div>
             </div>
@@ -27,48 +31,65 @@
 
             <div id="paso-1" class="paso-container transition-opacity duration-300 h-full flex flex-col">
                 <h2 class="text-base md:text-lg font-bold text-indigo-400 mb-4 flex items-center gap-2 shrink-0">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    </svg>
                     Paso 1: Escáner de Credencial
                 </h2>
-                
-                <label class="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-2xl cursor-pointer hover:border-indigo-500 bg-slate-900/50 transition-all relative overflow-hidden group min-h-[300px]">
+
+                <label
+                    class="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-2xl cursor-pointer hover:border-indigo-500 bg-slate-900/50 transition-all relative overflow-hidden group min-h-[300px]">
                     <input type="file" id="ine-image" accept="image/*" class="hidden" onchange="procesarOCR(event)">
                     <div id="upload-ui" class="text-center p-6">
-                        <svg class="mx-auto h-12 w-12 text-slate-500 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <svg class="mx-auto h-12 w-12 text-slate-500 group-hover:text-indigo-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
                         <p class="mt-2 text-sm text-slate-300 font-medium">Toca aquí para escanear tu INE</p>
                     </div>
                     <img id="preview-img" class="hidden absolute inset-0 w-full h-full object-cover opacity-30" />
-                    <div id="loading-ocr" class="hidden absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center backdrop-blur-sm z-10">
+                    <div id="loading-ocr"
+                        class="hidden absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center backdrop-blur-sm z-10">
                         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500 mb-3"></div>
-                        <p id="ocr-status" class="text-indigo-400 text-sm font-bold">Analizando hologramas y texto...</p>
+                        <p id="ocr-status" class="text-indigo-400 text-sm font-bold">Analizando hologramas y texto...
+                        </p>
                     </div>
                 </label>
             </div>
 
             <div id="paso-2" class="paso-container hidden absolute inset-0 p-4 md:p-8 bg-slate-800 overflow-y-auto">
-                <h2 class="text-base md:text-lg font-bold text-indigo-400 mb-4 border-b border-slate-700 pb-2 shrink-0">Paso 2: Validación de Datos</h2>
-                
+                <h2 class="text-base md:text-lg font-bold text-indigo-400 mb-4 border-b border-slate-700 pb-2 shrink-0">
+                    Paso 2: Validación de Datos</h2>
+
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
                     <div class="md:col-span-6">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Clave de Elector</label>
-                        <input type="text" id="f-clave" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 font-mono text-xs md:text-sm">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Clave de
+                            Elector</label>
+                        <input type="text" id="f-clave"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 font-mono text-xs md:text-sm">
                     </div>
                     <div class="md:col-span-6">
                         <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">CURP</label>
-                        <input type="text" id="f-curp" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 font-mono text-xs md:text-sm">
+                        <input type="text" id="f-curp"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 font-mono text-xs md:text-sm">
                     </div>
-                    
+
                     <div class="md:col-span-12 mt-1">
                         <h3 class="text-xs md:text-sm font-bold text-slate-300 mb-2">Nombre Completo</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
                             <div>
-                                <input type="text" id="f-ap-pat" placeholder="Apellido Paterno" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-ap-pat" placeholder="Apellido Paterno"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div>
-                                <input type="text" id="f-ap-mat" placeholder="Apellido Materno" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-ap-mat" placeholder="Apellido Materno"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div>
-                                <input type="text" id="f-nombre" placeholder="Nombre(s)" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-nombre" placeholder="Nombre(s)"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                         </div>
                     </div>
@@ -76,87 +97,126 @@
                     <div class="md:col-span-12 mt-1 border-y border-slate-700 py-3">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] md:text-xs font-bold text-indigo-400 mb-1 uppercase">Crea tu Contraseña</label>
-                                <input type="password" id="f-password" placeholder="Mínimo 6 caracteres" class="w-full bg-slate-900 border border-indigo-500/50 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+                                <label
+                                    class="block text-[10px] md:text-xs font-bold text-indigo-400 mb-1 uppercase">Crea
+                                    tu Contraseña</label>
+                                <input type="password" id="f-password" placeholder="Mínimo 6 caracteres"
+                                    class="w-full bg-slate-900 border border-indigo-500/50 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm shadow-[0_0_10px_rgba(99,102,241,0.1)]">
                             </div>
                             <div>
-                                <label class="block text-[10px] md:text-xs font-bold text-indigo-400 mb-1 uppercase">Confirma tu Contraseña</label>
-                                <input type="password" id="f-password-conf" placeholder="Vuelve a escribirla" class="w-full bg-slate-900 border border-indigo-500/50 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+                                <label
+                                    class="block text-[10px] md:text-xs font-bold text-indigo-400 mb-1 uppercase">Confirma
+                                    tu Contraseña</label>
+                                <input type="password" id="f-password-conf" placeholder="Vuelve a escribirla"
+                                    class="w-full bg-slate-900 border border-indigo-500/50 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm shadow-[0_0_10px_rgba(99,102,241,0.1)]">
                             </div>
                         </div>
                     </div>
 
                     <div class="md:col-span-6 mt-1">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Nacimiento</label>
-                        <input type="date" id="f-fecha" onchange="calcularEdad()" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 [color-scheme:dark] text-sm">
+                        <label
+                            class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Nacimiento</label>
+                        <input type="date" id="f-fecha" onchange="calcularEdad()"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 [color-scheme:dark] text-sm">
                     </div>
                     <div class="md:col-span-6 mt-1">
-                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Edad Calculada</label>
-                        <input type="text" id="f-edad-calc" readonly placeholder="-" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-400 outline-none font-bold text-sm">
+                        <label class="block text-[10px] md:text-xs font-bold text-slate-400 mb-1 uppercase">Edad
+                            Calculada</label>
+                        <input type="text" id="f-edad-calc" readonly placeholder="-"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-400 outline-none font-bold text-sm">
                     </div>
 
                     <div class="md:col-span-12 mt-2 border-t border-slate-700 pt-3">
                         <h3 class="text-xs md:text-sm font-bold text-slate-300 mb-2">Dirección de Residencia</h3>
                         <div class="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3">
                             <div class="col-span-2 md:col-span-6">
-                                <input type="text" id="f-calle" placeholder="Calle" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-calle" placeholder="Calle"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div class="col-span-1 md:col-span-3">
-                                <input type="text" id="f-num-ext" placeholder="Núm. Ext" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-num-ext" placeholder="Núm. Ext"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div class="col-span-1 md:col-span-3">
-                                <input type="text" id="f-num-int" placeholder="Núm. Int" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-num-int" placeholder="Núm. Int"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div class="col-span-1 md:col-span-3">
-                                <input type="text" id="f-cp" placeholder="C.P." class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm">
+                                <input type="text" id="f-cp" placeholder="C.P."
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 text-sm">
                             </div>
                             <div class="col-span-1 md:col-span-4">
-                                <input type="text" id="f-municipio" placeholder="Municipio" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-municipio" placeholder="Municipio"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                             <div class="col-span-2 md:col-span-5">
-                                <input type="text" id="f-estado" placeholder="Estado" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
+                                <input type="text" id="f-estado" placeholder="Estado"
+                                    class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-indigo-500 uppercase text-sm">
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-700">
-                    <button onclick="irAPaso(3)" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg">Confirmar e ir a Biometría ➔</button>
+                    <button onclick="validarPaso2()"
+                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg">Confirmar
+                        e ir a Biometría ➔</button>
                 </div>
             </div>
 
             <div id="paso-3" class="paso-container hidden absolute inset-0 p-4 md:p-8 bg-slate-800 overflow-y-auto">
-                <h2 class="text-base md:text-lg font-bold text-indigo-400 mb-4 border-b border-slate-700 pb-2">Paso 3: Seguridad Nivel 3</h2>
-                
+                <h2 class="text-base md:text-lg font-bold text-indigo-400 mb-4 border-b border-slate-700 pb-2">Paso 3:
+                    Seguridad Nivel 3</h2>
+
                 <div class="flex flex-col md:flex-row gap-4 md:gap-6 pb-20">
-                    <div class="flex-1 bg-slate-900 rounded-2xl border border-slate-700 p-4 flex flex-col items-center justify-center relative overflow-hidden min-h-[250px]">
-                        <video id="webcam" autoplay playsinline class="w-full h-full object-cover rounded-xl bg-black absolute inset-0 transform scale-x-[-1]"></video>
-                        
-                        <button onclick="tomarFoto()" id="btn-foto" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 z-10 w-3/4 absolute bottom-4">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
+                    <div
+                        class="flex-1 bg-slate-900 rounded-2xl border border-slate-700 p-4 flex flex-col items-center justify-center relative overflow-hidden min-h-[250px]">
+                        <video id="webcam" autoplay playsinline
+                            class="w-full h-full object-cover rounded-xl bg-black absolute inset-0 transform scale-x-[-1]"></video>
+
+                        <button onclick="tomarFoto()" id="btn-foto"
+                            class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center justify-center gap-2 z-10 w-3/4 absolute bottom-4">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            </svg>
                             <span>Capturar Rostro</span>
                         </button>
 
-                        <div id="bio-status" class="hidden absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center z-20">
-                            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4 border-2 border-green-500">
-                                <svg class="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                        <div id="bio-status"
+                            class="hidden absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center z-20">
+                            <div
+                                class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4 border-2 border-green-500">
+                                <svg class="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
                             </div>
                             <p class="text-green-400 font-bold text-lg md:text-xl">Rostro Validado</p>
                         </div>
                     </div>
 
-                    <div class="flex-1 bg-slate-900 rounded-2xl border border-slate-700 p-5 flex flex-col items-center justify-center text-center opacity-50 pointer-events-none transition-opacity duration-500" id="panel-2fa">
-                        
+                    <div class="flex-1 bg-slate-900 rounded-2xl border border-slate-700 p-5 flex flex-col items-center justify-center text-center opacity-50 pointer-events-none transition-opacity duration-500"
+                        id="panel-2fa">
+
                         <div id="fase-email" class="w-full">
-                            <div class="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            <div
+                                class="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
                             </div>
                             <h3 class="font-bold text-slate-200 mb-1">Vincular Correo</h3>
                             <p class="text-xs text-slate-400 mb-4">Te enviaremos un código de 6 dígitos.</p>
-                            
-                            <input type="email" id="f-email" placeholder="tu@correo.com" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 mb-3 text-center">
-                            
-                            <button onclick="enviarCodigoEmail()" id="btn-enviar-codigo" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg transition text-sm">
+
+                            <input type="email" id="f-email" placeholder="tu@correo.com"
+                                class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 mb-3 text-center">
+
+                            <button onclick="enviarCodigoEmail()" id="btn-enviar-codigo"
+                                class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg transition text-sm">
                                 Enviar Código
                             </button>
                         </div>
@@ -164,10 +224,12 @@
                         <div id="fase-codigo" class="w-full hidden">
                             <h3 class="font-bold text-slate-200 mb-1">Ingresa el Código</h3>
                             <p class="text-xs text-slate-400 mb-4">Revisa tu bandeja de entrada o spam.</p>
-                            
-                            <input type="text" id="f-codigo" placeholder="000000" maxlength="6" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-3 text-white outline-none focus:border-green-500 mb-4 text-center font-mono text-xl tracking-[0.5em]">
-                            
-                            <button id="btn-finalizar" onclick="finalizarRegistro()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl shadow-lg transition">
+
+                            <input type="text" id="f-codigo" placeholder="000000" maxlength="6"
+                                class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-3 text-white outline-none focus:border-green-500 mb-4 text-center font-mono text-xl tracking-[0.5em]">
+
+                            <button id="btn-finalizar" onclick="finalizarRegistro()"
+                                class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl shadow-lg transition">
                                 Completar Alta en DB
                             </button>
                         </div>
@@ -179,14 +241,15 @@
         </div>
     </div>
 
-    <div id="toast-error" class="hidden fixed top-4 right-4 bg-red-600 text-white font-bold px-6 py-3 rounded-xl shadow-2xl z-50 transition-opacity">
+    <div id="toast-error"
+        class="hidden fixed top-4 right-4 bg-red-600 text-white font-bold px-6 py-3 rounded-xl shadow-2xl z-50 transition-opacity">
         Error al guardar en base de datos.
     </div>
 
     <script>
         function calcularEdad() {
             const fechaInput = document.getElementById('f-fecha').value;
-            if(!fechaInput) return;
+            if (!fechaInput) return;
             const fechaNac = new Date(fechaInput);
             const hoy = new Date();
             let edad = hoy.getFullYear() - fechaNac.getFullYear();
@@ -195,39 +258,139 @@
             document.getElementById('f-edad-calc').value = `${edad} años`;
         }
 
+        function validarPaso2() {
+            const curp = document.getElementById('f-curp').value.trim();
+            const password = document.getElementById('f-password').value;
+            const passwordConf = document.getElementById('f-password-conf').value;
+
+            if (!curp) {
+                alert('⚠️ La CURP / Clave de Elector es obligatoria.');
+                return;
+            }
+            if (!password || password.length < 6) {
+                alert('⚠️ La contraseña debe tener al menos 6 caracteres.');
+                document.getElementById('f-password').focus();
+                return;
+            }
+            if (password !== passwordConf) {
+                alert('❌ Las contraseñas no coinciden. Escríbelas de nuevo.');
+                document.getElementById('f-password').value = '';
+                document.getElementById('f-password-conf').value = '';
+                document.getElementById('f-password').focus();
+                return;
+            }
+
+            // Todo OK: avanzamos al paso 3
+            irAPaso(3);
+        }
+
         function irAPaso(paso) {
             document.querySelectorAll('.paso-container').forEach(el => el.classList.add('hidden'));
             document.getElementById(`paso-${paso}`).classList.remove('hidden');
-            for(let i=1; i<=3; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const dot = document.getElementById(`dot-${i}`);
                 dot.className = i <= paso ? "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" : "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-slate-600";
             }
-            if(paso === 3) iniciarCamara();
+            if (paso === 3) iniciarCamara();
         }
 
         async function procesarOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
+
             document.getElementById('upload-ui').classList.add('hidden');
             document.getElementById('preview-img').src = URL.createObjectURL(file);
             document.getElementById('preview-img').classList.remove('hidden');
             document.getElementById('loading-ocr').classList.remove('hidden');
+
             try {
-                const result = await Tesseract.recognize(file, 'spa');
-                const texto = result.data.text;
-                const claveMatch = texto.match(/[A-Z]{6}\d{8}[A-Z0-9]{4}/);
-                const curpMatch = texto.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z\d]\d/);
-                const fechaMatch = texto.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
-                if (claveMatch) document.getElementById('f-clave').value = claveMatch[0];
-                if (curpMatch) document.getElementById('f-curp').value = curpMatch[0];
+                // Barra de progreso en vivo
+                const result = await Tesseract.recognize(file, 'spa', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.round(m.progress * 100);
+                            document.getElementById('ocr-status').innerText = `Analizando hologramas... ${pct}%`;
+                        }
+                    }
+                });
+
+                const texto = result.data.text.toUpperCase();
+                const lineas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+
+                // 1. CLAVE DE ELECTOR (6 letras + 8 dígitos + 4 alfanuméricos)
+                const claveMatch = texto.match(/\b([A-Z]{6}\d{8}[A-Z0-9]{4})\b/);
+                if (claveMatch) document.getElementById('f-clave').value = claveMatch[1];
+
+                // 2. CURP (formato oficial 18 caracteres)
+                const curpMatch = texto.match(/\b([A-Z]{4}\d{6}[HM][A-Z]{2}[BCDFGHJKLMNPQRSTVWXYZ]{3}[A-Z0-9]\d)\b/);
+                if (curpMatch) document.getElementById('f-curp').value = curpMatch[1];
+
+                // 3. FECHA DE NACIMIENTO (DD/MM/AAAA o DD-MM-AAAA)
+                const fechaMatch = texto.match(/\b(\d{2})[\/\-](\d{2})[\/\-](\d{4})\b/);
                 if (fechaMatch) {
-                    const p = fechaMatch[0].split('/');
-                    if(p[2].length === 4) { document.getElementById('f-fecha').value = `${p[2]}-${p[1]}-${p[0]}`; calcularEdad(); }
+                    document.getElementById('f-fecha').value = `${fechaMatch[3]}-${fechaMatch[2]}-${fechaMatch[1]}`;
+                    calcularEdad();
                 }
-                setTimeout(() => irAPaso(2), 500);
-            } catch (e) { irAPaso(2); } 
-            finally { document.getElementById('loading-ocr').classList.add('hidden'); }
+
+                // 4. NOMBRE: después de la etiqueta "NOMBRE" en la INE
+                // Línea n+1 = "APELLIDO PATERNO APELLIDO MATERNO", n+2 = "NOMBRE(S)"
+                const idxNombre = lineas.findIndex(l => /^NOMBRE$/.test(l));
+                if (idxNombre !== -1) {
+                    const lineaApellidos = lineas[idxNombre + 1] || '';
+                    const lineaNombres = lineas[idxNombre + 2] || '';
+
+                    const partes = lineaApellidos.split(/\s+/).filter(p => p.length > 1);
+                    if (partes[0]) document.getElementById('f-ap-pat').value = partes[0];
+                    if (partes[1]) document.getElementById('f-ap-mat').value = partes[1];
+                    if (lineaNombres && !/DOMICILIO|CALLE|CURP|CLAVE|MUNICIPIO|ESTADO/.test(lineaNombres)) {
+                        document.getElementById('f-nombre').value = lineaNombres;
+                    }
+                }
+
+                // 5. DOMICILIO (calle + número exterior e interior)
+                const idxDom = lineas.findIndex(l => /DOMICILIO/.test(l));
+                if (idxDom !== -1) {
+                    const lineaDom = lineas[idxDom + 1] || '';
+                    const domMatch = lineaDom.match(/^(.+?)\s+(\d+[A-Z]?)\s*(?:INT\.?\s*(\S+))?/);
+                    if (domMatch) {
+                        document.getElementById('f-calle').value = domMatch[1].trim();
+                        document.getElementById('f-num-ext').value = domMatch[2];
+                        if (domMatch[3]) document.getElementById('f-num-int').value = domMatch[3];
+                    } else {
+                        document.getElementById('f-calle').value = lineaDom;
+                    }
+                }
+
+                // 6. MUNICIPIO
+                const idxMun = lineas.findIndex(l => /MUNICIPIO/.test(l));
+                if (idxMun !== -1) {
+                    const txt = lineas[idxMun].replace(/MUNICIPIO[:\s]*/, '').trim();
+                    if (txt) document.getElementById('f-municipio').value = txt;
+                    else if (lineas[idxMun + 1]) document.getElementById('f-municipio').value = lineas[idxMun + 1];
+                }
+
+                // 7. ESTADO
+                const idxEdo = lineas.findIndex(l => /^ESTADO/.test(l));
+                if (idxEdo !== -1) {
+                    const txt = lineas[idxEdo].replace(/ESTADO[:\s]*/, '').trim();
+                    if (txt) document.getElementById('f-estado').value = txt;
+                    else if (lineas[idxEdo + 1]) document.getElementById('f-estado').value = lineas[idxEdo + 1];
+                }
+
+                // 8. CÓDIGO POSTAL
+                const cpMatch = texto.match(/C\.?P\.?\s*(\d{5})/);
+                if (cpMatch) document.getElementById('f-cp').value = cpMatch[1];
+
+                setTimeout(() => irAPaso(2), 600);
+
+            } catch (e) {
+                console.error('Error OCR:', e);
+                irAPaso(2);
+            } finally {
+                document.getElementById('loading-ocr').classList.add('hidden');
+            }
         }
+
 
         let streamCamara = null;
         async function iniciarCamara() {
@@ -235,7 +398,7 @@
                 const video = document.getElementById('webcam');
                 streamCamara = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 video.srcObject = streamCamara;
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function tomarFoto() {
@@ -243,18 +406,18 @@
             btn.innerHTML = `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>`;
             btn.disabled = true;
             setTimeout(() => {
-                if(streamCamara) streamCamara.getTracks().forEach(track => track.stop());
+                if (streamCamara) streamCamara.getTracks().forEach(track => track.stop());
                 btn.classList.add('hidden');
                 document.getElementById('bio-status').classList.remove('hidden');
                 document.getElementById('panel-2fa').classList.remove('opacity-50', 'pointer-events-none');
             }, 1500);
         }
 
-        let codigoReal = "123456"; 
+        let codigoReal = "123456";
 
         function enviarCodigoEmail() {
             const email = document.getElementById('f-email').value;
-            if(!email.includes('@')) { alert("Ingresa un correo válido."); return; }
+            if (!email.includes('@')) { alert("Ingresa un correo válido."); return; }
             const btn = document.getElementById('btn-enviar-codigo');
             btn.innerText = "Enviando..."; btn.disabled = true;
 
@@ -268,33 +431,33 @@
         async function finalizarRegistro() {
             const codigoIngresado = document.getElementById('f-codigo').value;
             const curp = document.getElementById('f-curp').value;
-            const passwordCreada = document.getElementById('f-password').value; 
+            const passwordCreada = document.getElementById('f-password').value;
             const passwordConf = document.getElementById('f-password-conf').value; // <-- Capturamos la confirmación
-            
+
             // 1. Validaciones
-            if(!curp) {
+            if (!curp) {
                 alert("La CURP es obligatoria para el registro.");
                 irAPaso(2);
                 return;
             }
-            if(!passwordCreada || passwordCreada.length < 5) {
+            if (!passwordCreada || passwordCreada.length < 5) {
                 alert("Por favor, crea una contraseña de al menos 5 caracteres.");
                 irAPaso(2);
                 return;
             }
 
             // NUEVA VALIDACIÓN: Revisar que coincidan
-            if(passwordCreada !== passwordConf) {
+            if (passwordCreada !== passwordConf) {
                 alert("❌ Las contraseñas no coinciden. Por favor, escríbelas de nuevo.");
                 irAPaso(2);
-                
+
                 // Buena práctica de UX: Se las borramos para que lo intente otra vez
                 document.getElementById('f-password').value = '';
                 document.getElementById('f-password-conf').value = '';
                 return;
             }
 
-            if(codigoIngresado !== codigoReal) {
+            if (codigoIngresado !== codigoReal) {
                 alert("❌ Código incorrecto. Intenta de nuevo.");
                 return;
             }
@@ -309,10 +472,10 @@
                 const respuesta = await fetch('/api/registro-ciudadano', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        ine: curp, 
+                    body: JSON.stringify({
+                        ine: document.getElementById('f-clave').value.trim(),
                         nombre: nombreCompleto,
-                        password: passwordCreada 
+                        password: passwordCreada
                     })
                 });
 
@@ -321,18 +484,19 @@
                 if (!respuesta.ok) throw new Error(datos.error || "Error desconocido");
 
                 alert(`✅ ¡Registro Exitoso y Verificado!\nLos datos se han guardado en el padrón.\n\nSerás redirigido al Login para votar.`);
-                window.location.href = '/'; 
+                window.location.href = '/';
 
             } catch (error) {
                 const toast = document.getElementById('toast-error');
                 toast.innerText = error.message;
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 4000);
-                
+
                 btnFinalizar.innerHTML = "Completar Alta en DB";
                 btnFinalizar.disabled = false;
             }
         }
     </script>
 </body>
+
 </html>

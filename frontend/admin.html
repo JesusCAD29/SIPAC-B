@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPAC-B | Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
 </head>
 
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
@@ -159,6 +160,14 @@
     </div>
 
     <script>
+        // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!verificarAccesoProtegido('admin')) return; 
+            
+            // Si el guardia lo dejó pasar, entonces cargamos los datos
+            cargarPadron(); 
+        });
+        
         // === LÓGICA PARA CREAR ELECCIONES ===
         async function crearEleccion() {
             const titulo = document.getElementById('el-titulo').value.trim();
@@ -170,7 +179,6 @@
                 return;
             }
 
-            // Convertimos la cadena "Azul, Roja" en un arreglo real ['Azul', 'Roja']
             const opciones = opcionesStr.split(',').map(o => o.trim()).filter(o => o !== "");
 
             const btn = document.getElementById('btn-crear-eleccion');
@@ -179,15 +187,21 @@
             btn.disabled = true;
 
             try {
-                const respuesta = await fetch('/api/elecciones', {
+                // CORRECCIÓN: Usamos fetchProtegido para crear la elección
+                const respuesta = await fetchProtegido('/api/elecciones', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ titulo, descripcion: desc, opciones })
                 });
 
+                // Si el token expiró, lo sacamos
+                if (respuesta.status === 401 || respuesta.status === 403) {
+                    cerrarSesionGlobal();
+                    return;
+                }
+
                 if (respuesta.ok) {
                     alert("✅ Proceso electoral publicado. Los ciudadanos ya pueden verlo.");
-                    // Limpiamos los campos
                     document.getElementById('el-titulo').value = '';
                     document.getElementById('el-desc').value = '';
                     document.getElementById('el-opciones').value = '';
@@ -205,9 +219,18 @@
         // === LÓGICA PARA CARGAR EL PADRÓN ===
         async function cargarPadron() {
             try {
-                const respuesta = await fetch('/api/padron');
-                const ciudadanos = await respuesta.json();
+                // CORRECCIÓN: P mayúscula en fetchProtegido
+                const respuesta = await fetchProtegido('/api/padron');
+                
+                // CORRECCIÓN: Primero validamos seguridad...
+                if (respuesta.status === 401 || respuesta.status === 403) {
+                    cerrarSesionGlobal();
+                    return;
+                }
 
+                // CORRECCIÓN: ...y solo DESPUÉS sacamos el JSON (una sola vez)
+                const ciudadanos = await respuesta.json();
+                
                 const tabla = document.getElementById('tabla-usuarios');
                 tabla.innerHTML = '';
 
@@ -242,13 +265,9 @@
                 document.getElementById('stat-porcentaje').innerText = total > 0 ? Math.round((totalVotaron / total) * 100) : 0;
 
             } catch (error) {
-                console.error("Error al cargar padrón:", error);
+                console.error("Error de conexión:", error);
             }
         }
-
-        // Cargar datos al entrar
-        document.addEventListener('DOMContentLoaded', cargarPadron);
     </script>
 </body>
-
 </html>
