@@ -7,13 +7,17 @@
     <title>SIPAC-B | Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="js/auth.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 </head>
 
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
 
     <div class="flex flex-col lg:flex-row min-h-screen">
 
-        <aside class="w-full lg:w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col">
+        <aside class="w-full lg:w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col z-10">
             <div class="flex items-center gap-3 mb-10">
                 <div class="bg-indigo-600 p-2 rounded-lg">
                     <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,13 +49,13 @@
             </nav>
 
             <div class="mt-auto pt-10">
-                <button onclick="window.location.href='/'"
+                <button onclick="cerrarSesionGlobal()"
                     class="w-full border border-slate-700 hover:bg-slate-700 text-slate-300 py-2 rounded-lg text-sm transition">Cerrar
                     Sesión</button>
             </div>
         </aside>
 
-        <main class="flex-grow p-6 lg:p-10">
+        <main class="flex-grow p-6 lg:p-10 z-0">
             <div class="max-w-6xl mx-auto">
 
                 <header class="mb-8">
@@ -130,6 +134,21 @@
                     </div>
                 </div>
 
+                <div
+                    class="bg-slate-800 rounded-2xl border border-slate-700 mb-8 shadow-xl overflow-hidden p-6 relative z-0">
+                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        Inteligencia Geoespacial
+                    </h3>
+                    <p class="text-slate-400 text-sm mb-4">Mapa de calor de densidad poblacional de ciudadanos
+                        registrados.</p>
+                    <div id="mapa-calor"
+                        class="w-full h-[400px] rounded-xl border border-slate-600 bg-slate-900 relative z-0"></div>
+                </div>
+
                 <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -160,15 +179,11 @@
     </div>
 
     <script>
-        // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
         document.addEventListener('DOMContentLoaded', () => {
-            if (!verificarAccesoProtegido('admin')) return; 
-            
-            // Si el guardia lo dejó pasar, entonces cargamos los datos
-            cargarPadron(); 
+            if (!verificarAccesoProtegido('admin')) return;
+            cargarPadron();
         });
-        
-        // === LÓGICA PARA CREAR ELECCIONES ===
+
         async function crearEleccion() {
             const titulo = document.getElementById('el-titulo').value.trim();
             const desc = document.getElementById('el-desc').value.trim();
@@ -180,24 +195,19 @@
             }
 
             const opciones = opcionesStr.split(',').map(o => o.trim()).filter(o => o !== "");
-
             const btn = document.getElementById('btn-crear-eleccion');
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = `<span class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span> Publicando...`;
             btn.disabled = true;
 
             try {
-                // CORRECCIÓN: Usamos fetchProtegido para crear la elección
                 const respuesta = await fetchProtegido('/api/elecciones', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ titulo, descripcion: desc, opciones })
                 });
 
-                // Si el token expiró, lo sacamos
                 if (respuesta.status === 401 || respuesta.status === 403) {
-                    cerrarSesionGlobal();
-                    return;
+                    cerrarSesionGlobal(); return;
                 }
 
                 if (respuesta.ok) {
@@ -206,7 +216,7 @@
                     document.getElementById('el-desc').value = '';
                     document.getElementById('el-opciones').value = '';
                 } else {
-                    alert("❌ Ocurrió un error al guardar la elección en la base de datos.");
+                    alert("❌ Ocurrió un error al guardar la elección.");
                 }
             } catch (error) {
                 alert("❌ Error de conexión con el servidor.");
@@ -216,52 +226,38 @@
             }
         }
 
-        // Variables globales para el mapa
         let mapaIniciado = false;
         let mapa;
 
-        // === LÓGICA PARA CARGAR EL PADRÓN ===
         async function cargarPadron() {
             try {
-                // CORRECCIÓN: P mayúscula en fetchProtegido
                 const respuesta = await fetchProtegido('/api/padron');
-                
-                // CORRECCIÓN: Primero validamos seguridad...
+
                 if (respuesta.status === 401 || respuesta.status === 403) {
-                    cerrarSesionGlobal();
-                    return;
+                    cerrarSesionGlobal(); return;
                 }
 
-                // CORRECCIÓN: ...y solo DESPUÉS sacamos el JSON (una sola vez)
                 const ciudadanos = await respuesta.json();
-                
                 const tabla = document.getElementById('tabla-usuarios');
                 tabla.innerHTML = '';
 
                 let totalVotaron = 0;
-                let puntosCalor = []; // Arreglo para guardar las coordenadas
+                let puntosCalor = [];
 
                 ciudadanos.forEach(c => {
                     if (c.haVotado) totalVotaron++;
 
-                    // 🗺️ EXTRAEMOS LAS COORDENADAS PARA EL MAPA
                     if (c.coordenadas && c.coordenadas.lat && c.coordenadas.lng) {
-                        // Guardamos formato: [latitud, longitud, intensidad]
                         puntosCalor.push([c.coordenadas.lat, c.coordenadas.lng, 1]);
                     }
 
-                    const fecha = new Date(c.fechaRegistro).toLocaleDateString('es-MX', {
-                        year: 'numeric', month: 'short', day: 'numeric'
-                    });
-
+                    const fecha = new Date(c.fechaRegistro).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
                     const fila = `
                         <tr class="hover:bg-slate-700/30 transition">
                             <td class="px-6 py-4 font-bold text-slate-200">${c.nombre}</td>
                             <td class="px-6 py-4 font-mono text-xs text-indigo-300">${c.ine}</td>
                             <td class="px-6 py-4 text-center">
-                                ${c.haVotado
-                            ? '<span class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-bold border border-green-500/20">VOTÓ</span>'
-                            : '<span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-[10px] font-bold border border-yellow-500/20">PENDIENTE</span>'}
+                                ${c.haVotado ? '<span class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-bold border border-green-500/20">VOTÓ</span>' : '<span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-[10px] font-bold border border-yellow-500/20">PENDIENTE</span>'}
                             </td>
                             <td class="px-6 py-4 text-right text-xs text-slate-500">${fecha}</td>
                         </tr>
@@ -269,41 +265,32 @@
                     tabla.innerHTML += fila;
                 });
 
-                // Actualizar Estadísticas
-                const total = ciudadanos.length;
-                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-total').innerText = ciudadanos.length;
                 document.getElementById('stat-votaron').innerText = totalVotaron;
-                document.getElementById('stat-porcentaje').innerText = total > 0 ? Math.round((totalVotaron / total) * 100) : 0;
+                document.getElementById('stat-porcentaje').innerText = ciudadanos.length > 0 ? Math.round((totalVotaron / ciudadanos.length) * 100) : 0;
 
-                // === 🗺️ DIBUJAR MAPA DE CALOR ===
-                // 1. Inicializamos el contenedor solo la primera vez
+                // --- DIBUJAR MAPA DE CALOR ---
                 if (!mapaIniciado) {
-                    // Centramos el mapa en Pachuca (Lat, Lng, Zoom)
-                    mapa = L.map('mapa-calor').setView([20.1011, -98.7591], 12);
-                    
-                    // Cargamos una textura de mapa oscuro para que combine con el diseño
+                    mapa = L.map('mapa-calor').setView([20.1011, -98.7591], 12); // Centro en Pachuca
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                         attribution: '© OpenStreetMap contributors',
                         maxZoom: 18
                     }).addTo(mapa);
-                    
                     mapaIniciado = true;
                 }
 
-                // 2. Limpiamos capas viejas por si el administrador le da a "Sincronizar"
+                // Limpiar capas previas
                 mapa.eachLayer((layer) => {
-                    if (layer.options && layer.options.blur) {
-                        mapa.removeLayer(layer);
-                    }
+                    if (layer.options && layer.options.blur) mapa.removeLayer(layer);
                 });
 
-                // 3. Pintamos los puntos de calor
+                // Pintar calor
                 if (puntosCalor.length > 0) {
                     L.heatLayer(puntosCalor, {
-                        radius: 25, // Tamaño de la mancha
-                        blur: 15,   // Difuminado
+                        radius: 25,
+                        blur: 15,
                         maxZoom: 14,
-                        gradient: {0.4: 'blue', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red'}
+                        gradient: { 0.4: 'blue', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red' }
                     }).addTo(mapa);
                 }
 
@@ -313,4 +300,5 @@
         }
     </script>
 </body>
+
 </html>

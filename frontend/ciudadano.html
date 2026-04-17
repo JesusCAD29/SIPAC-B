@@ -73,7 +73,7 @@
         // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
         document.addEventListener('DOMContentLoaded', () => {
             // El guardia verifica que haya token y que el rol sea 'ciudadano'
-            if (!verificarAccesoProtegido('ciudadano')) return; 
+            if (!verificarAccesoProtegido('ciudadano')) return;
 
             const nombreSesion = sessionStorage.getItem('sesion_nombre');
             const ineSesion = sessionStorage.getItem('sesion_ine');
@@ -97,7 +97,7 @@
             try {
                 // AHORA USAMOS FETCH PROTEGIDO PARA ENVIAR EL TOKEN AL SERVIDOR
                 const res = await fetchProtegido('/api/elecciones/activas');
-                
+
                 // Verificamos si el token es inválido o expiró
                 if (res.status === 401 || res.status === 403) {
                     cerrarSesionGlobal();
@@ -129,8 +129,8 @@
                                 ${el.descripcion}
                             </p>
                             
-                            <button onclick="irABoleta('${el._id}', '${el.opciones.join('|')}')" class="w-full bg-[#2563eb] hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md transition transform hover:-translate-y-0.5 active:scale-95">
-                                Participar Ahora
+                            <button onclick="window.location.href='/boleta.html?id=${el._id}'" class="w-full bg-[#2563eb] hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md transition transform hover:-translate-y-0.5 active:scale-95">
+                                Entrar a la Urna
                             </button>
                         </div>
                     `;

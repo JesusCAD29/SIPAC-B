@@ -21,5 +21,6 @@ router.post('/votar', verificarToken, votacionController.emitirVoto);
 // --- Rutas de Administrador ---
 router.get('/padron', verificarToken, soloAdmin, adminController.obtenerPadron);
 router.post('/elecciones', verificarToken, soloAdmin, adminController.crearEleccion);
+router.get('/estadisticas-completo', verificarToken, soloAdmin, adminController.obtenerEstadisticasGlobales);
 
 module.exports = router;

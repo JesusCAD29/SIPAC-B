@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const VotoSchema = new mongoose.Schema({
-    index: { type: Number, required: true },
-    timestamp: { type: String, required: true },
+    index: Number,
+    timestamp: String,
     data: {
         folio: String,
         candidato: String,
-        mensaje: String // Para el bloque génesis
+        eleccionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Eleccion' } // <-- Vínculo vital
     },
-    previousHash: { type: String, required: true },
-    hash: { type: String, required: true }
+    previousHash: String,
+    hash: String
 });
 
 module.exports = mongoose.model('Voto', VotoSchema);
