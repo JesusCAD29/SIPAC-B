@@ -110,35 +110,60 @@
         let nombreSesion = null;
         let opcionesVoto = [];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
-            // Validamos que haya un token vivo. Si no lo hay, lo expulsa.
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Guard: verifica token JWT
             if (!verificarAccesoProtegido()) return;
 
             ineSesion = sessionStorage.getItem('sesion_ine');
             nombreSesion = sessionStorage.getItem('sesion_nombre');
 
-            // Extraemos las opciones de la elección (Ej: "Planilla Azul|Planilla Roja")
-            const opcionesStr = sessionStorage.getItem('eleccion_opciones');
-
-            if (!ineSesion || !opcionesStr) {
-                alert("Acceso denegado o sesión expirada.");
+            // 2. Verificamos que la sesión de identidad esté viva
+            if (!ineSesion) {
+                alert("Sesión expirada. Vuelve a iniciar sesión.");
                 cerrarSesionGlobal();
                 return;
             }
 
-            // 2. Normalizamos la identidad visual
+            // 3. Extraemos el ID de la elección desde la URL (?id=...)
+            const urlParams = new URLSearchParams(window.location.search);
+            const eleccionId = urlParams.get('id');
+
+            if (!eleccionId) {
+                alert("⚠️ Error: No se indicó a qué elección pertenece esta boleta.");
+                window.location.replace('/ciudadano.html');
+                return;
+            }
+
+            // 4. Cargamos las opciones directamente desde la API
+            try {
+                const res = await fetchProtegido('/api/elecciones/activas');
+                const elecciones = await res.json();
+                const eleccion = elecciones.find(e => e._id === eleccionId);
+
+                if (!eleccion) {
+                    alert("⚠️ Esta elección no existe o ya fue cerrada.");
+                    window.location.replace('/ciudadano.html');
+                    return;
+                }
+
+                opcionesVoto = eleccion.opciones;
+                dibujarOpciones(opcionesVoto);
+
+            } catch (err) {
+                alert("❌ Error de conexión al cargar la boleta.");
+                window.location.replace('/ciudadano.html');
+                return;
+            }
+
+            // 5. Pintamos la identidad del ciudadano
             let nombreMostrar = "CIUDADANO";
             if (nombreSesion) {
                 nombreMostrar = nombreSesion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
             }
             document.getElementById('display-nombre').innerText = nombreMostrar;
             document.getElementById('display-ine').innerText = `ID: ${ineSesion}`;
-
-            // 3. GENERACIÓN DINÁMICA DE LAS OPCIONES DE VOTO
-            opcionesVoto = opcionesStr.split('|');
-            dibujarOpciones(opcionesVoto);
         });
+
 
         // FUNCIÓN QUE DIBUJA LAS TARJETAS DE LOS CANDIDATOS
         function dibujarOpciones(opciones) {
@@ -195,7 +220,7 @@
             const candidatoSeleccionado = document.querySelector('input[name="candidato"]:checked');
             const msgError = document.getElementById('msg-error');
             const btnVotar = document.getElementById('btn-votar');
-            
+
             // 1. CAPTURAMOS EL TEXTO DE LA PROPUESTA
             const propuestaTexto = document.getElementById('f-propuesta') ? document.getElementById('f-propuesta').value.trim() : "";
 
