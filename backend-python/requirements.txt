@@ -1,0 +1,4 @@
+pymongo
+transformers
+torch
+python-dotenv
