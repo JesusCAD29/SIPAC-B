@@ -70,16 +70,19 @@
     </nav>
 
     <script>
-        // 1. ESTE BLOQUE VA PRIMERO: Protege la entrada a la página
+        /**
+         * Al cargar el DOM:
+         *  1. Verifica que el token exista y el rol sea 'ciudadano' (redirige si no).
+         *  2. Normaliza y muestra el nombre del ciudadano sin tildes en mayúsculas.
+         *  3. Llama a cargarEleccionesReales() para poblar la grilla de elecciones.
+         */
         document.addEventListener('DOMContentLoaded', () => {
-            // El guardia verifica que haya token y que el rol sea 'ciudadano'
             if (!verificarAccesoProtegido('ciudadano')) return;
 
             const nombreSesion = sessionStorage.getItem('sesion_nombre');
-            const ineSesion = sessionStorage.getItem('sesion_ine');
 
-            // Normalización estricta del nombre para la UI
             if (nombreSesion) {
+                // Elimina diacríticos (tildes) y convierte a mayúsculas para uniformidad
                 const nombreNormalizado = nombreSesion
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
@@ -88,34 +91,34 @@
                 document.getElementById('nombre-ciudadano').innerText = nombreNormalizado;
             }
 
-            // Si el guardia lo dejó pasar, cargamos los datos
             cargarEleccionesReales();
         });
 
-        // === FUNCIÓN QUE EXTRAE LAS ELECCIONES DE LA BASE DE DATOS ===
+        /**
+         * cargarEleccionesReales — Consulta GET /api/elecciones/activas con token.
+         * Si el token expiró (401/403), cierra sesión automáticamente.
+         * Renderiza una tarjeta por cada elección; el botón navega a boleta.html?id=<_id>.
+         */
         async function cargarEleccionesReales() {
             try {
-                // AHORA USAMOS FETCH PROTEGIDO PARA ENVIAR EL TOKEN AL SERVIDOR
                 const res = await fetchProtegido('/api/elecciones/activas');
 
-                // Verificamos si el token es inválido o expiró
                 if (res.status === 401 || res.status === 403) {
                     cerrarSesionGlobal();
                     return;
                 }
 
-                // Solo leemos el JSON si pasamos la aduana de seguridad
                 const elecciones = await res.json();
 
                 const contenedor = document.getElementById('contenedor-elecciones');
-                contenedor.innerHTML = ''; // Limpiamos el mensaje de "Buscando..."
+                contenedor.innerHTML = '';
 
                 if (elecciones.length === 0) {
                     contenedor.innerHTML = '<p class="text-slate-500 col-span-full">No hay procesos electorales activos en este momento. Por favor, vuelva más tarde.</p>';
                     return;
                 }
 
-                // Dibujamos una tarjeta por cada elección encontrada
+                // Genera una tarjeta HTML por cada elección y la inyecta en el grid
                 elecciones.forEach(el => {
                     contenedor.innerHTML += `
                         <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-200 p-6 relative overflow-hidden transition-all duration-300 flex flex-col">
@@ -140,9 +143,12 @@
             }
         }
 
-        // === FUNCIÓN DE REDIRECCIÓN A LA URNA ===
+        /**
+         * irABoleta — Alternativa de navegación que persiste las opciones
+         * de la elección en sessionStorage antes de redirigir a boleta.html.
+         * (Usado como fallback si la boleta no lee el ?id de la URL.)
+         */
         function irABoleta(eleccionId, opcionesStr) {
-            // Guardamos las opciones específicas de esta elección para que la Boleta las pueda dibujar
             if (opcionesStr) sessionStorage.setItem('eleccion_opciones', opcionesStr);
             window.location.href = '/boleta.html';
         }

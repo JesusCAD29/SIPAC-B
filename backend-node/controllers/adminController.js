@@ -1,8 +1,25 @@
+/**
+ * adminController.js — Controlador exclusivo para el rol Administrador.
+ *
+ * Exporta:
+ *  - obtenerPadron:             Lista todos los ciudadanos registrados (sin contraseñas).
+ *  - crearEleccion:             Crea un nuevo proceso electoral con sus opciones de candidatos.
+ *  - obtenerAnaliticasNLP:      Retorna las propuestas ya clasificadas por la IA, agrupadas por categoría.
+ *  - obtenerEstadisticasGlobales: Combina conteo de votos y análisis NLP, con filtro opcional por elección.
+ *
+ * Todas las rutas que usan este controlador están protegidas por verificarToken + soloAdmin.
+ */
+
 const Ciudadano = require('../models/Ciudadano');
 const Eleccion = require('../models/Eleccion');
 const Propuesta = require('../models/Propuesta');
 const Voto = require('../models/Voto');
 
+/**
+ * GET /api/padron
+ * Devuelve todos los ciudadanos ordenados por fecha de registro descendente.
+ * Excluye el campo password de la respuesta.
+ */
 exports.obtenerPadron = async (req, res) => {
     try {
         const ciudadanos = await Ciudadano.find().select('-password').sort({ fechaRegistro: -1 });
@@ -12,6 +29,11 @@ exports.obtenerPadron = async (req, res) => {
     }
 };
 
+/**
+ * POST /api/elecciones
+ * Crea y persiste un nuevo proceso electoral.
+ * Body esperado: { titulo, descripcion, opciones: string[] }
+ */
 exports.crearEleccion = async (req, res) => {
     try {
         const nuevaEleccion = new Eleccion({
@@ -26,48 +48,55 @@ exports.crearEleccion = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/estadisticas-completo (uso legacy / NLP solo)
+ * Retorna únicamente las propuestas ya procesadas por la IA,
+ * junto con un objeto de conteo agrupado por categoría.
+ */
 exports.obtenerAnaliticasNLP = async (req, res) => {
     try {
-        // Solo traemos las propuestas que la IA ya terminó de procesar
         const propuestas = await Propuesta.find({ procesado: true }).sort({ fecha: -1 });
-        
-        // Agrupamos los datos para que la gráfica los digiera fácil
+
+        // Agrupamos por categoría para alimentar gráficas tipo pastel/barras
         const conteoCategorias = {};
         propuestas.forEach(p => {
             const cat = p.categoriaIA;
             conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
         });
 
-        res.json({
-            totales: conteoCategorias,
-            listaPropuestas: propuestas // Mandamos los textos por si los quieres leer
-        });
+        res.json({ totales: conteoCategorias, listaPropuestas: propuestas });
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener analíticas de IA' });
     }
 };
 
+/**
+ * GET /api/estadisticas-completo?eleccionId=<id>
+ * Devuelve votos y propuestas consolidados para el panel de administración.
+ * Si se proporciona eleccionId en la query, filtra solo los datos de esa elección.
+ *
+ * Respuesta: { votos: { candidato: count }, ia: { categoría: count }, propuestas: [] }
+ */
 exports.obtenerEstadisticasGlobales = async (req, res) => {
     try {
-        const { eleccionId } = req.query; // Capturamos el ID del frontend
+        const { eleccionId } = req.query;
 
-        // Armamos los filtros dinámicamente
+        // Filtros dinámicos: si no viene eleccionId, trae todo
         const filtroVotos = eleccionId ? { 'data.eleccionId': eleccionId } : {};
         const filtroPropuestas = eleccionId ? { procesado: true, eleccionId: eleccionId } : { procesado: true };
 
-        // Buscamos en MongoDB aplicando los filtros
         const votos = await Voto.find(filtroVotos);
         const propuestas = await Propuesta.find(filtroPropuestas);
 
-        // Agrupamos votos por candidato
+        // Conteo de votos por candidato (se omite el Bloque Génesis con index 0)
         const conteoVotos = {};
         votos.forEach(v => {
-            if(v.index === 0) return; 
+            if (v.index === 0) return;
             const can = v.data.candidato;
             conteoVotos[can] = (conteoVotos[can] || 0) + 1;
         });
 
-        // Agrupamos propuestas por categoría IA
+        // Conteo de propuestas por categoría IA
         const conteoIA = {};
         propuestas.forEach(p => {
             const cat = p.categoriaIA;

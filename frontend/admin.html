@@ -179,14 +179,22 @@
     </div>
 
     <script>
+        /**
+         * Al cargar el DOM: verifica rol 'admin' y carga el padrón automáticamente.
+         */
         document.addEventListener('DOMContentLoaded', () => {
             if (!verificarAccesoProtegido('admin')) return;
             cargarPadron();
         });
 
+        /**
+         * crearEleccion — Publica un nuevo proceso electoral.
+         * Lee título, descripción y opciones (separadas por coma) del formulario.
+         * Llama a POST /api/elecciones; limpia el formulario si tiene éxito.
+         */
         async function crearEleccion() {
-            const titulo = document.getElementById('el-titulo').value.trim();
-            const desc = document.getElementById('el-desc').value.trim();
+            const titulo     = document.getElementById('el-titulo').value.trim();
+            const desc       = document.getElementById('el-desc').value.trim();
             const opcionesStr = document.getElementById('el-opciones').value.trim();
 
             if (!titulo || !desc || !opcionesStr) {
@@ -194,6 +202,7 @@
                 return;
             }
 
+            // Separa la cadena de candidatos en un array limpio
             const opciones = opcionesStr.split(',').map(o => o.trim()).filter(o => o !== "");
             const btn = document.getElementById('btn-crear-eleccion');
             const textoOriginal = btn.innerHTML;
@@ -226,9 +235,17 @@
             }
         }
 
+        // Estado del mapa de Leaflet (se inicializa solo una vez para evitar duplicados)
         let mapaIniciado = false;
         let mapa;
 
+        /**
+         * cargarPadron — Obtiene el padrón de GET /api/padron y actualiza la UI.
+         *  - Inyecta filas en la tabla de ciudadanos.
+         *  - Actualiza las tarjetas de estadísticas (total, votaron, participación %).
+         *  - Inicializa o actualiza el mapa de calor de Leaflet con las coordenadas de cada ciudadano.
+         *  - Solo inicializa el mapa la primera vez; en actualizaciones siguientes solo reemplaza la capa de calor.
+         */
         async function cargarPadron() {
             try {
                 const respuesta = await fetchProtegido('/api/padron');
@@ -242,36 +259,44 @@
                 tabla.innerHTML = '';
 
                 let totalVotaron = 0;
-                let puntosCalor = [];
+                let puntosCalor  = [];
 
                 ciudadanos.forEach(c => {
                     if (c.haVotado) totalVotaron++;
 
+                    // Acumula coordenadas válidas para el mapa de calor
                     if (c.coordenadas && c.coordenadas.lat && c.coordenadas.lng) {
                         puntosCalor.push([c.coordenadas.lat, c.coordenadas.lng, 1]);
                     }
 
-                    const fecha = new Date(c.fechaRegistro).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
-                    const fila = `
+                    const fecha = new Date(c.fechaRegistro).toLocaleDateString('es-MX', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    });
+
+                    tabla.innerHTML += `
                         <tr class="hover:bg-slate-700/30 transition">
                             <td class="px-6 py-4 font-bold text-slate-200">${c.nombre}</td>
                             <td class="px-6 py-4 font-mono text-xs text-indigo-300">${c.ine}</td>
                             <td class="px-6 py-4 text-center">
-                                ${c.haVotado ? '<span class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-bold border border-green-500/20">VOTÓ</span>' : '<span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-[10px] font-bold border border-yellow-500/20">PENDIENTE</span>'}
+                                ${c.haVotado
+                                    ? '<span class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-bold border border-green-500/20">VOTÓ</span>'
+                                    : '<span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-[10px] font-bold border border-yellow-500/20">PENDIENTE</span>'}
                             </td>
                             <td class="px-6 py-4 text-right text-xs text-slate-500">${fecha}</td>
                         </tr>
                     `;
-                    tabla.innerHTML += fila;
                 });
 
-                document.getElementById('stat-total').innerText = ciudadanos.length;
-                document.getElementById('stat-votaron').innerText = totalVotaron;
-                document.getElementById('stat-porcentaje').innerText = ciudadanos.length > 0 ? Math.round((totalVotaron / ciudadanos.length) * 100) : 0;
+                // Actualiza tarjetas de KPIs
+                document.getElementById('stat-total').innerText      = ciudadanos.length;
+                document.getElementById('stat-votaron').innerText    = totalVotaron;
+                document.getElementById('stat-porcentaje').innerText = ciudadanos.length > 0
+                    ? Math.round((totalVotaron / ciudadanos.length) * 100)
+                    : 0;
 
-                // --- DIBUJAR MAPA DE CALOR ---
+                // Inicializa el mapa Leaflet solo la primera vez
                 if (!mapaIniciado) {
-                    mapa = L.map('mapa-calor').setView([20.1011, -98.7591], 12); // Centro en Pachuca
+                    mapa = L.map('mapa-calor').setView([20.1011, -98.7591], 12); // Centro: Pachuca, Hgo
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                         attribution: '© OpenStreetMap contributors',
                         maxZoom: 18
@@ -279,12 +304,11 @@
                     mapaIniciado = true;
                 }
 
-                // Limpiar capas previas
+                // Elimina la capa de calor anterior antes de pintar la nueva
                 mapa.eachLayer((layer) => {
                     if (layer.options && layer.options.blur) mapa.removeLayer(layer);
                 });
 
-                // Pintar calor
                 if (puntosCalor.length > 0) {
                     L.heatLayer(puntosCalor, {
                         radius: 25,

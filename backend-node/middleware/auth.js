@@ -1,27 +1,40 @@
-// middleware/auth.js
+/**
+ * middleware/auth.js — Middlewares de autenticación y autorización JWT.
+ *
+ * Exporta:
+ *  - verificarToken: Valida que la petición incluya un JWT firmado y vigente.
+ *                    Si es válido, adjunta el payload decodificado en req.usuario.
+ *  - soloAdmin:      Ejecutar después de verificarToken. Permite el paso solo si
+ *                    req.usuario.rol === 'admin'; de lo contrario retorna 403.
+ */
+
 const jwt = require('jsonwebtoken');
 
-// 1. Verifica que el usuario tenga un token válido
+/**
+ * Extrae y verifica el token del header Authorization: Bearer <token>.
+ * En caso de éxito, inyecta { ine, nombre, rol } en req.usuario y llama next().
+ */
 const verificarToken = (req, res, next) => {
-    // Busca el token en los headers (Authorization: Bearer <token>)
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = authHeader && authHeader.split(' ')[1]; // Formato: "Bearer <token>"
 
     if (!token) {
         return res.status(401).json({ error: 'Acceso denegado. Token no proporcionado.' });
     }
 
     try {
-        // Verifica que la firma sea válida y que no haya expirado
         const verificado = jwt.verify(token, process.env.JWT_SECRET);
-        req.usuario = verificado; // Guarda los datos del usuario en la request (ej. req.usuario.rol)
-        next(); // Le permite pasar a la ruta solicitada
+        req.usuario = verificado; // Disponible en todos los controladores posteriores
+        next();
     } catch (error) {
         return res.status(403).json({ error: 'Token inválido o expirado.' });
     }
 };
 
-// 2. Verifica específicamente que el usuario tenga rol de Administrador
+/**
+ * Debe usarse siempre después de verificarToken en la cadena de middlewares.
+ * Bloquea el acceso si el rol no es 'admin'.
+ */
 const soloAdmin = (req, res, next) => {
     if (req.usuario && req.usuario.rol === 'admin') {
         next();

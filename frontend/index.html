@@ -86,6 +86,12 @@
     </main>
 
     <script>
+        /**
+         * iniciarSesion — Maneja el submit del formulario de login.
+         * Llama a POST /api/login, guarda el JWT en localStorage
+         * y los datos de sesión en sessionStorage, luego redirige
+         * a la página correspondiente al rol (admin.html / ciudadano.html).
+         */
         async function iniciarSesion(event) {
             event.preventDefault();
 
@@ -96,6 +102,7 @@
 
             errorMsg.classList.add('hidden');
             btn.disabled = true;
+            // Muestra spinner mientras espera respuesta del servidor
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
             try {
@@ -109,14 +116,15 @@
 
                 if (!respuesta.ok) throw new Error(datos.error);
 
-                // GUARDAMOS EL TOKEN SEGURO
+                // JWT con vida de 8h; se requiere en cada petición protegida
                 localStorage.setItem('sipac_token', datos.token);
 
-                // Guardamos los datos visuales
+                // Datos de sesión visual (rol, nombre, INE); no son secretos
                 sessionStorage.setItem('sesion_ine', datos.ine);
                 sessionStorage.setItem('sesion_nombre', datos.nombre);
                 sessionStorage.setItem('sesion_rol', datos.rol);
 
+                // El servidor decide la ruta de redirección según el rol
                 window.location.href = datos.redirect;
 
             } catch (error) {

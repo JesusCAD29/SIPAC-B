@@ -132,9 +132,17 @@
     </main>
 
     <script>
+        // Instancias de Chart.js; se guardan para destruirlas antes de redibujar
         let chartVotos, chartIA;
+        // ID de la elección seleccionada en el selector; null = sin filtro
         let eleccionIdGlobal = null;
 
+        /**
+         * Al cargar el DOM:
+         *  1. Verifica acceso de rol 'admin'.
+         *  2. Puebla el selector con las elecciones disponibles.
+         *  3. Escucha cambios en el selector para recargar todas las gráficas filtradas.
+         */
         document.addEventListener('DOMContentLoaded', () => {
             if (!verificarAccesoProtegido('admin')) return;
             cargarSelectorElecciones();
@@ -145,6 +153,10 @@
             });
         });
 
+        /**
+         * cargarSelectorElecciones — Llena el <select> con los títulos de cada elección.
+         * Usa el _id de Mongo como value para filtrarlo en las siguientes llamadas.
+         */
         async function cargarSelectorElecciones() {
             try {
                 const respuesta = await fetchProtegido('/api/elecciones/activas');
@@ -154,40 +166,51 @@
                 elecciones.forEach(e => {
                     const opt = document.createElement('option');
                     opt.value = e._id;
-                    opt.text = e.titulo;
+                    opt.text  = e.titulo;
                     selector.appendChild(opt);
                 });
             } catch (e) { console.error(e); }
         }
 
+        /**
+         * cargarTodo — Carga en paralelo blockchain y estadísticas para la elección seleccionada.
+         * No hace nada si no hay elección seleccionada.
+         */
         async function cargarTodo() {
             if (!eleccionIdGlobal) return;
 
             try {
-                // Blockchain filtrada
-                const resBC = await fetchProtegido(`/api/blockchain?eleccionId=${eleccionIdGlobal}`);
-                const dataBC = await resBC.json();
+                // Cadena filtrada para auditoría
+                const resBC   = await fetchProtegido(`/api/blockchain?eleccionId=${eleccionIdGlobal}`);
+                const dataBC  = await resBC.json();
                 renderBlockchain(dataBC.cadena);
 
-                // Estadísticas e IA filtradas
+                // Estadísticas de votos + análisis NLP filtradas por elección
                 const resStats = await fetchProtegido(`/api/estadisticas-completo?eleccionId=${eleccionIdGlobal}`);
-                const stats = await resStats.json();
+                const stats    = await resStats.json();
 
                 renderCharts(stats.votos, stats.ia);
                 renderTablaIA(stats.propuestas);
             } catch (e) { console.error(e); }
         }
 
+        /**
+         * renderCharts — Dibuja las gráficas de Chart.js.
+         * Destruye instancias previas para evitar memory leaks al redibujar.
+         *
+         * @param {object} votos - { candidato: count } — datos para la gráfica de barras.
+         * @param {object} ia    - { categoría: count } — datos para la dona NLP.
+         */
         function renderCharts(votos, ia) {
             if (chartVotos) chartVotos.destroy();
-            if (chartIA) chartIA.destroy();
+            if (chartIA)    chartIA.destroy();
 
-            const ctxVotos = document.getElementById('chartVotos').getContext('2d');
+            const ctxVotos  = document.getElementById('chartVotos').getContext('2d');
             const gradVotos = ctxVotos.createLinearGradient(0, 0, 0, 400);
             gradVotos.addColorStop(0, '#6366f1');
             gradVotos.addColorStop(1, '#312e81');
 
-            // GRÁFICA DE VOTOS (ESTILO MODERNO)
+            // Gráfica de barras: distribución de votos por candidato
             chartVotos = new Chart(ctxVotos, {
                 type: 'bar',
                 data: {
@@ -213,7 +236,7 @@
                 }
             });
 
-            // GRÁFICA DE IA (DONA VIBRANTE)
+            // Gráfica de dona: categorías NLP de propuestas ciudadanas
             chartIA = new Chart(document.getElementById('chartIA'), {
                 type: 'doughnut',
                 data: {
@@ -228,30 +251,47 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '44%', // Radio interno configurado
+                    cutout: '44%',
                     animation: { animateRotate: true, duration: 2500 },
-                    plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', usePointStyle: true, padding: 20 } } }
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#cbd5e1', usePointStyle: true, padding: 20 } }
+                    }
                 }
             });
         }
 
+        /**
+         * renderTablaIA — Inyecta las filas de propuestas clasificadas por NLP.
+         * Colorea la confianza: verde si > 85%, amarillo si es menor.
+         *
+         * @param {object[]} propuestas - Array de documentos Propuesta con texto, categoriaIA y confianzaIA.
+         */
         function renderTablaIA(propuestas) {
             const tbody = document.getElementById('tabla-ia');
-            tbody.innerHTML = propuestas.length > 0 ? propuestas.map(p => `
-                <tr class="hover:bg-slate-800/50 transition-colors">
-                    <td class="px-6 py-4 text-slate-300 text-sm italic">"${p.texto}"</td>
-                    <td class="px-6 py-4">
-                        <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase">
-                            ${p.categoriaIA}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <span class="font-mono text-xs ${p.confianzaIA > 85 ? 'text-green-400' : 'text-yellow-400'}">${p.confianzaIA}%</span>
-                    </td>
-                </tr>
-            `).join('') : '<tr><td colspan="3" class="px-6 py-10 text-center text-slate-500 italic">No hay propuestas procesadas para esta elección.</td></tr>';
+            tbody.innerHTML = propuestas.length > 0
+                ? propuestas.map(p => `
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="px-6 py-4 text-slate-300 text-sm italic">"${p.texto}"</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase">
+                                ${p.categoriaIA}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <span class="font-mono text-xs ${p.confianzaIA > 85 ? 'text-green-400' : 'text-yellow-400'}">${p.confianzaIA}%</span>
+                        </td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="3" class="px-6 py-10 text-center text-slate-500 italic">No hay propuestas procesadas para esta elección.</td></tr>';
         }
 
+        /**
+         * renderBlockchain — Muestra la cadena de bloques en modo auditoría.
+         * Abrevia el hash a 25 caracteres para que quepa en la celda.
+         * El Bloque Génesis (index 0) se etiqueta diferenciado de los votos cifrados.
+         *
+         * @param {object[]} cadena - Array de bloques de la blockchain.
+         */
         function renderBlockchain(cadena) {
             const tbody = document.getElementById('tabla-blockchain');
             tbody.innerHTML = cadena.map(b => `

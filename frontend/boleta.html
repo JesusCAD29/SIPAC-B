@@ -106,25 +106,32 @@
     </div>
 
     <script>
+        // Variables globales de la sesión activa
         let ineSesion = null;
         let nombreSesion = null;
         let opcionesVoto = [];
 
+        /**
+         * Al cargar el DOM:
+         *  1. Verifica el token JWT (redirige al login si falta).
+         *  2. Valida que la URL contenga ?id=<eleccionId>.
+         *  3. Consulta /api/elecciones/activas y busca la elección por _id.
+         *  4. Llama a dibujarOpciones() con el array de candidatos de esa elección.
+         *  5. Muestra nombre e INE del ciudadano autenticado en la boleta.
+         */
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Guard: verifica token JWT
             if (!verificarAccesoProtegido()) return;
 
-            ineSesion = sessionStorage.getItem('sesion_ine');
+            ineSesion   = sessionStorage.getItem('sesion_ine');
             nombreSesion = sessionStorage.getItem('sesion_nombre');
 
-            // 2. Verificamos que la sesión de identidad esté viva
             if (!ineSesion) {
                 alert("Sesión expirada. Vuelve a iniciar sesión.");
                 cerrarSesionGlobal();
                 return;
             }
 
-            // 3. Extraemos el ID de la elección desde la URL (?id=...)
+            // Lee el ID de la elección que el ciudadano seleccionó en ciudadano.html
             const urlParams = new URLSearchParams(window.location.search);
             const eleccionId = urlParams.get('id');
 
@@ -134,7 +141,7 @@
                 return;
             }
 
-            // 4. Cargamos las opciones directamente desde la API
+            // Obtiene la lista de elecciones y filtra la correcta por su _id
             try {
                 const res = await fetchProtegido('/api/elecciones/activas');
                 const elecciones = await res.json();
@@ -155,7 +162,7 @@
                 return;
             }
 
-            // 5. Pintamos la identidad del ciudadano
+            // Normaliza el nombre para mostrarlo sin tildes en mayúsculas
             let nombreMostrar = "CIUDADANO";
             if (nombreSesion) {
                 nombreMostrar = nombreSesion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
@@ -164,35 +171,30 @@
             document.getElementById('display-ine').innerText = `ID: ${ineSesion}`;
         });
 
-
-        // FUNCIÓN QUE DIBUJA LAS TARJETAS DE LOS CANDIDATOS
+        /**
+         * dibujarOpciones — Renderiza una tarjeta radio por cada candidato/opción.
+         * Asigna colores de la paleta por posición y detecta keywords especiales
+         * ('ABST', 'NULO', 'AZUL', 'ROJO', 'VERDE') para colorear semánticamente.
+         *
+         * @param {string[]} opciones - Lista de nombres de candidatos o partidos.
+         */
         function dibujarOpciones(opciones) {
             const contenedor = document.getElementById('contenedor-opciones');
-            contenedor.innerHTML = ''; // Limpiar mensaje de carga
+            contenedor.innerHTML = '';
 
-            // Colores por defecto para ir asignando si no dicen específicamente "Rojo" o "Azul"
             const paletaColores = ['blue', 'red', 'green', 'purple', 'yellow', 'pink'];
 
             opciones.forEach((opcionTexto, index) => {
-                const nombreSeguro = opcionTexto.replace(/\s+/g, '_').toLowerCase(); // Para el ID interno
-                const opcionLimpia = opcionTexto.toUpperCase(); // Para mostrar en pantalla
+                const opcionLimpia = opcionTexto.toUpperCase();
 
-                // Lógica de colores simple:
+                // Asignación de color: primero por keywords, luego por posición
                 let color = paletaColores[index % paletaColores.length];
+                if      (opcionLimpia.includes('ABST') || opcionLimpia.includes('NULO')) color = 'slate';
+                else if (opcionLimpia.includes('AZUL'))                                  color = 'blue';
+                else if (opcionLimpia.includes('ROJA') || opcionLimpia.includes('ROJO')) color = 'red';
+                else if (opcionLimpia.includes('VERDE'))                                 color = 'green';
 
-                // Si la opción dice "Abstención" o "Nulo", la ponemos gris
-                if (opcionLimpia.includes('ABST') || opcionLimpia.includes('NULO')) {
-                    color = 'slate';
-                } else if (opcionLimpia.includes('AZUL')) {
-                    color = 'blue';
-                } else if (opcionLimpia.includes('ROJA') || opcionLimpia.includes('ROJO')) {
-                    color = 'red';
-                } else if (opcionLimpia.includes('VERDE')) {
-                    color = 'green';
-                }
-
-                // Plantilla HTML de la tarjeta inyectable
-                const tarjeta = `
+                contenedor.innerHTML += `
                     <label class="cursor-pointer group">
                         <input type="radio" name="candidato" value="${opcionTexto}" class="peer hidden">
                         <div class="h-full bg-[#1f2238] border-2 border-[#363b5e] rounded-xl p-5 flex flex-col items-center justify-center text-center transition-all peer-checked:border-${color}-500 peer-checked:bg-${color}-500/10 group-hover:border-${color}-400">
@@ -207,25 +209,31 @@
                         </div>
                     </label>
                 `;
-                contenedor.innerHTML += tarjeta;
             });
         }
 
-        // CORRECCIÓN: Usar la función global para limpiar TODO (incluyendo el token)
+        /** Alias local que delega el cierre de sesión a la función global de auth.js. */
         function cerrarSesion() {
             cerrarSesionGlobal();
         }
 
+        /**
+         * emitirVoto — Envía el voto autenticado al servidor.
+         * Flujo:
+         *  1. Valida que haya candidato seleccionado y que el ?id esté en la URL.
+         *  2. Llama a POST /api/votar con { candidato, propuesta, eleccionId }.
+         *  3. Si tiene éxito, oculta la urna y muestra la pantalla de éxito con el folio UUID.
+         *  4. Si recibe 401/403, cierra sesión automáticamente tras 2 segundos.
+         */
         async function emitirVoto() {
             const candidatoSeleccionado = document.querySelector('input[name="candidato"]:checked');
-            const msgError = document.getElementById('msg-error');
-            const btnVotar = document.getElementById('btn-votar');
+            const msgError  = document.getElementById('msg-error');
+            const btnVotar  = document.getElementById('btn-votar');
+            const propuestaTexto = document.getElementById('f-propuesta')
+                ? document.getElementById('f-propuesta').value.trim()
+                : "";
 
-            // 1. CAPTURAMOS EL TEXTO DE LA PROPUESTA
-            const propuestaTexto = document.getElementById('f-propuesta') ? document.getElementById('f-propuesta').value.trim() : "";
-
-            // 👇 NUEVO: 2. EXTRAEMOS EL ID DE LA ELECCIÓN DESDE LA URL
-            const urlParams = new URLSearchParams(window.location.search);
+            const urlParams      = new URLSearchParams(window.location.search);
             const eleccionIdActual = urlParams.get('id');
 
             if (!candidatoSeleccionado) {
@@ -234,7 +242,6 @@
                 return;
             }
 
-            // Validamos que la URL no esté rota
             if (!eleccionIdActual) {
                 msgError.innerText = '⚠️ Error fatal: No se detectó a qué elección pertenece esta boleta.';
                 msgError.classList.remove('hidden');
@@ -246,14 +253,13 @@
             btnVotar.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Encriptando...`;
 
             try {
-                // 3. ENVIAMOS TODO AL SERVIDOR (AHORA SÍ CON EL ID INCLUIDO)
                 const respuesta = await fetchProtegido('/api/votar', {
                     method: 'POST',
                     body: JSON.stringify({
                         ine: ineSesion,
                         candidato: candidatoSeleccionado.value,
                         propuesta: propuestaTexto,
-                        eleccionId: eleccionIdActual // <--- ¡EL ESLABÓN PERDIDO!
+                        eleccionId: eleccionIdActual
                     })
                 });
 
@@ -263,9 +269,9 @@
                 }
 
                 const datos = await respuesta.json();
-
                 if (!respuesta.ok) throw new Error(datos.error);
 
+                // Éxito: oculta la urna y muestra el folio de verificación
                 document.getElementById('urna-container').classList.add('hidden');
                 document.getElementById('hash-voto').innerText = datos.folio;
                 document.getElementById('pantalla-exito').classList.remove('hidden');
@@ -274,6 +280,7 @@
                 msgError.innerText = error.message;
                 msgError.classList.remove('hidden');
 
+                // Si el token expiró, redirige al login tras 2 segundos
                 if (error.message.includes('Token') || error.message.includes('Autorización')) {
                     setTimeout(() => cerrarSesionGlobal(), 2000);
                 }

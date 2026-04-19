@@ -1,26 +1,45 @@
+/**
+ * routes/api.js — Router maestro de la API REST de SIPAC-B.
+ *
+ * Agrupa todas las rutas bajo el prefijo /api (montado en server.js).
+ * Aplica middlewares de autenticación según el nivel de acceso requerido:
+ *
+ *  Públicas (sin token):
+ *    POST /api/registro-ciudadano  Alta de nuevo ciudadano.
+ *    POST /api/login               Autenticación, retorna JWT.
+ *
+ *  Protegidas (token válido):
+ *    GET  /api/blockchain          Cadena de bloques para auditoría.
+ *    GET  /api/elecciones/activas  Lista de procesos electorales.
+ *    POST /api/votar               Emisión de voto.
+ *
+ *  Solo Administrador (token + rol admin):
+ *    GET  /api/padron              Padrón de ciudadanos registrados.
+ *    POST /api/elecciones          Creación de nuevo proceso electoral.
+ *    GET  /api/estadisticas-completo Panel de estadísticas con NLP y votos.
+ */
+
 const express = require('express');
 const router = express.Router();
 
-// Middlewares
 const { verificarToken, soloAdmin } = require('../middleware/auth');
 
-// Controladores
-const authController = require('../controllers/authController');
-const adminController = require('../controllers/adminController');
+const authController    = require('../controllers/authController');
+const adminController   = require('../controllers/adminController');
 const votacionController = require('../controllers/votacionController');
 
 // --- Rutas Públicas ---
 router.post('/registro-ciudadano', authController.registro);
-router.post('/login', authController.login);
+router.post('/login',              authController.login);
 
 // --- Rutas Protegidas (Requieren Token) ---
-router.get('/blockchain', verificarToken, votacionController.obtenerBlockchain);
-router.get('/elecciones/activas', verificarToken, votacionController.obtenerEleccionesActivas);
-router.post('/votar', verificarToken, votacionController.emitirVoto);
+router.get('/blockchain',          verificarToken, votacionController.obtenerBlockchain);
+router.get('/elecciones/activas',  verificarToken, votacionController.obtenerEleccionesActivas);
+router.post('/votar',              verificarToken, votacionController.emitirVoto);
 
 // --- Rutas de Administrador ---
-router.get('/padron', verificarToken, soloAdmin, adminController.obtenerPadron);
-router.post('/elecciones', verificarToken, soloAdmin, adminController.crearEleccion);
-router.get('/estadisticas-completo', verificarToken, soloAdmin, adminController.obtenerEstadisticasGlobales);
+router.get('/padron',                 verificarToken, soloAdmin, adminController.obtenerPadron);
+router.post('/elecciones',            verificarToken, soloAdmin, adminController.crearEleccion);
+router.get('/estadisticas-completo',  verificarToken, soloAdmin, adminController.obtenerEstadisticasGlobales);
 
 module.exports = router;

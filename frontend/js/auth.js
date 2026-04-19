@@ -1,18 +1,38 @@
-// frontend/js/auth.js
+/**
+ * frontend/js/auth.js — Utilidades de autenticación para el lado del cliente.
+ *
+ * Este archivo debe incluirse en todas las páginas protegidas (admin.html,
+ * ciudadano.html, boleta.html, observador.html) ANTES de los scripts de página.
+ *
+ * Exporta (como funciones globales):
+ *  - verificarAccesoProtegido(rolRequerido?) — Redirige al login si no hay token
+ *    o si el rol del usuario no coincide con el requerido.
+ *  - fetchProtegido(url, opciones?)          — Wrapper de fetch que inyecta el
+ *    header Authorization: Bearer <token> automáticamente.
+ *  - cerrarSesionGlobal()                    — Limpia storage y redirige al login.
+ *
+ * Almacenamiento:
+ *  - localStorage:   'sipac_token'  → JWT con vida de 8h.
+ *  - sessionStorage: 'sesion_rol'   → Rol del usuario ('ciudadano' | 'admin').
+ */
 
-// 1. Revisa si hay un token al cargar la página (Excepto en index.html y registro.html)
+/**
+ * Protege páginas que requieren sesión activa.
+ * Llamar al inicio de cada página protegida: verificarAccesoProtegido('admin').
+ *
+ * @param {string|null} rolRequerido - 'admin' | 'ciudadano' | null (solo verifica token).
+ * @returns {boolean} true si el acceso es válido; false si redirigió.
+ */
 function verificarAccesoProtegido(rolRequerido = null) {
-    const token = localStorage.getItem('sipac_token');
+    const token    = localStorage.getItem('sipac_token');
     const rolActual = sessionStorage.getItem('sesion_rol');
 
     if (!token) {
-        // Lo patea de regreso al login
         window.location.replace('/');
         return false;
     }
 
     if (rolRequerido && rolActual !== rolRequerido) {
-        // Intenta acceder a una página que no es de su rol
         alert("Acceso denegado. Privilegios insuficientes.");
         window.location.replace('/');
         return false;
@@ -20,23 +40,32 @@ function verificarAccesoProtegido(rolRequerido = null) {
     return true;
 }
 
-// 2. Función para inyectar el Token en los fetch
+/**
+ * Wrapper de fetch que agrega el JWT en el header Authorization.
+ * Usar en lugar de fetch() para todas las llamadas a rutas protegidas.
+ *
+ * @param {string} url        - Endpoint de la API (ej. '/api/blockchain').
+ * @param {object} opciones   - Opciones estándar de fetch (method, body, etc.).
+ * @returns {Promise<Response>}
+ */
 function fetchProtegido(url, opciones = {}) {
     const token = localStorage.getItem('sipac_token');
-    
-    // Configura los headers estándar y agrega el Token
+
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
     };
 
-    // Combina los headers con las opciones que mande el usuario
+    // Merge: los headers del caller no sobreescriben Authorization
     opciones.headers = { ...opciones.headers, ...headers };
 
     return fetch(url, opciones);
 }
 
-// 3. Función unificada para cerrar sesión
+/**
+ * Cierra la sesión eliminando el token y el rol del storage,
+ * luego redirige al usuario a la página de login (index.html).
+ */
 function cerrarSesionGlobal() {
     localStorage.removeItem('sipac_token');
     sessionStorage.clear();

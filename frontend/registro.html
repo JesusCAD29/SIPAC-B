@@ -180,6 +180,11 @@
     </div>
 
     <script>
+        /**
+         * calcularEdad — Calcula y muestra la edad en f-edad-calc
+         * a partir del campo de fecha de nacimiento f-fecha.
+         * Se llama automáticamente en el evento onchange del input.
+         */
         function calcularEdad() {
             const fechaInput = document.getElementById('f-fecha').value;
             if (!fechaInput) return;
@@ -191,17 +196,21 @@
             document.getElementById('f-edad-calc').value = `${edad} años`;
         }
 
+        /**
+         * validarPaso2 — Valida los campos del formulario del Paso 2 antes de avanzar.
+         * Comprueba: CURP no vacía, CP no vacío, contraseña >= 6 chars, contraseñas coincidentes.
+         * Si todo es válido, navega al Paso 3 (biometría + 2FA).
+         */
         function validarPaso2() {
-            const curp = document.getElementById('f-curp').value.trim();
-            const password = document.getElementById('f-password').value;
+            const curp        = document.getElementById('f-curp').value.trim();
+            const password    = document.getElementById('f-password').value;
             const passwordConf = document.getElementById('f-password-conf').value;
-            const cp = document.getElementById('f-cp').value.trim(); // <-- CAPTURAMOS EL CP
+            const cp          = document.getElementById('f-cp').value.trim();
 
             if (!curp) {
                 alert('⚠️ La CURP / Clave de Elector es obligatoria.');
                 return;
             }
-            // NUEVO: Validamos que el CP no esté vacío
             if (!cp) {
                 alert('⚠️ El Código Postal es obligatorio para ubicar tu casilla en el mapa electoral.');
                 document.getElementById('f-cp').focus();
@@ -213,7 +222,7 @@
                 return;
             }
             if (password !== passwordConf) {
-                alert('❌ Las contraseñas no coinciden. Escríbelas de nuevo.');
+                alert('❌ Las contraseñas no coinciden. Escrríbelas de nuevo.');
                 document.getElementById('f-password').value = '';
                 document.getElementById('f-password-conf').value = '';
                 document.getElementById('f-password').focus();
@@ -223,16 +232,38 @@
             irAPaso(3);
         }
 
+        /**
+         * irAPaso — Navega entre los tres pasos del registro.
+         * Oculta todos los .paso-container y muestra solo el del paso indicado.
+         * Actualiza los indicadores de punto (dot-1, dot-2, dot-3) en el header.
+         * Si el paso es 3, inicia la cámara web automáticamente.
+         *
+         * @param {number} paso - Número de paso destino (1, 2 o 3).
+         */
         function irAPaso(paso) {
             document.querySelectorAll('.paso-container').forEach(el => el.classList.add('hidden'));
             document.getElementById(`paso-${paso}`).classList.remove('hidden');
             for (let i = 1; i <= 3; i++) {
                 const dot = document.getElementById(`dot-${i}`);
-                dot.className = i <= paso ? "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" : "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-slate-600";
+                dot.className = i <= paso
+                    ? "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"
+                    : "w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-slate-600";
             }
             if (paso === 3) iniciarCamara();
         }
 
+        /**
+         * procesarOCR — Extrae datos de la INE usando Tesseract.js (OCR en navegador).
+         * Flujo:
+         *  1. Muestra preview de la imagen y el spinner de carga.
+         *  2. Reconoce el texto en español con Tesseract.
+         *  3. Aplica expresiones regulares para extraer: Clave de Elector, CURP,
+         *     fecha de nacimiento, nombre completo, domicilio, municipio, estado y CP.
+         *  4. Rellena automáticamente los campos del Paso 2.
+         *  5. Navega al Paso 2 tras 600ms para dar feedback visual.
+         *
+         * @param {Event} event - Evento change del input[type=file].
+         */
         async function procesarOCR(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -252,26 +283,29 @@
                     }
                 });
 
-                const texto = result.data.text.toUpperCase();
+                const texto  = result.data.text.toUpperCase();
                 const lineas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 2);
 
+                // Extrae la Clave de Elector: 6 letras, 8 dígitos, 4 alfanuméricos
                 const claveMatch = texto.match(/\b([A-Z]{6}\d{8}[A-Z0-9]{4})\b/);
                 if (claveMatch) document.getElementById('f-clave').value = claveMatch[1];
 
+                // Extrae CURP con su patrón oficial de 18 caracteres
                 const curpMatch = texto.match(/\b([A-Z]{4}\d{6}[HM][A-Z]{2}[BCDFGHJKLMNPQRSTVWXYZ]{3}[A-Z0-9]\d)\b/);
                 if (curpMatch) document.getElementById('f-curp').value = curpMatch[1];
 
+                // Fecha de nacimiento formato DD/MM/AAAA o DD-MM-AAAA
                 const fechaMatch = texto.match(/\b(\d{2})[\/\-](\d{2})[\/\-](\d{4})\b/);
                 if (fechaMatch) {
                     document.getElementById('f-fecha').value = `${fechaMatch[3]}-${fechaMatch[2]}-${fechaMatch[1]}`;
                     calcularEdad();
                 }
 
+                // Nombre: la línea después de la etiqueta NOMBRE contiene apellidos y nombre
                 const idxNombre = lineas.findIndex(l => /^NOMBRE$/.test(l));
                 if (idxNombre !== -1) {
                     const lineaApellidos = lineas[idxNombre + 1] || '';
-                    const lineaNombres = lineas[idxNombre + 2] || '';
-
+                    const lineaNombres   = lineas[idxNombre + 2] || '';
                     const partes = lineaApellidos.split(/\s+/).filter(p => p.length > 1);
                     if (partes[0]) document.getElementById('f-ap-pat').value = partes[0];
                     if (partes[1]) document.getElementById('f-ap-mat').value = partes[1];
@@ -280,12 +314,13 @@
                     }
                 }
 
+                // Domicilio: línea siguiente a la etiqueta DOMICILIO
                 const idxDom = lineas.findIndex(l => /DOMICILIO/.test(l));
                 if (idxDom !== -1) {
                     const lineaDom = lineas[idxDom + 1] || '';
                     const domMatch = lineaDom.match(/^(.+?)\s+(\d+[A-Z]?)\s*(?:INT\.?\s*(\S+))?/);
                     if (domMatch) {
-                        document.getElementById('f-calle').value = domMatch[1].trim();
+                        document.getElementById('f-calle').value   = domMatch[1].trim();
                         document.getElementById('f-num-ext').value = domMatch[2];
                         if (domMatch[3]) document.getElementById('f-num-int').value = domMatch[3];
                     } else {
@@ -293,6 +328,7 @@
                     }
                 }
 
+                // Municipio
                 const idxMun = lineas.findIndex(l => /MUNICIPIO/.test(l));
                 if (idxMun !== -1) {
                     const txt = lineas[idxMun].replace(/MUNICIPIO[:\s]*/, '').trim();
@@ -300,6 +336,7 @@
                     else if (lineas[idxMun + 1]) document.getElementById('f-municipio').value = lineas[idxMun + 1];
                 }
 
+                // Estado
                 const idxEdo = lineas.findIndex(l => /^ESTADO/.test(l));
                 if (idxEdo !== -1) {
                     const txt = lineas[idxEdo].replace(/ESTADO[:\s]*/, '').trim();
@@ -307,6 +344,7 @@
                     else if (lineas[idxEdo + 1]) document.getElementById('f-estado').value = lineas[idxEdo + 1];
                 }
 
+                // CP: patrón C.P. seguido de 5 dígitos
                 const cpMatch = texto.match(/C\.?P\.?\s*(\d{5})/);
                 if (cpMatch) document.getElementById('f-cp').value = cpMatch[1];
 
@@ -314,13 +352,19 @@
 
             } catch (e) {
                 console.error('Error OCR:', e);
-                irAPaso(2);
+                irAPaso(2); // Si falla el OCR, deja al usuario llenar manualmente
             } finally {
                 document.getElementById('loading-ocr').classList.add('hidden');
             }
         }
 
+        // Stream de la cámara web; se guarda para detenerlo al completar biometría
         let streamCamara = null;
+
+        /**
+         * iniciarCamara — Solicita acceso a la cámara frontal y la conecta al elemento <video>.
+         * Si el usuario deniega el acceso, el error se ignora silenciosamente.
+         */
         async function iniciarCamara() {
             try {
                 const video = document.getElementById('webcam');
@@ -329,6 +373,10 @@
             } catch (e) { }
         }
 
+        /**
+         * tomarFoto — Simula la captura biométrica del rostro.
+         * Muestra un spinner por 1.5s, detiene el stream y revela el panel de 2FA.
+         */
         function tomarFoto() {
             const btn = document.getElementById('btn-foto');
             btn.innerHTML = `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>`;
@@ -337,12 +385,19 @@
                 if (streamCamara) streamCamara.getTracks().forEach(track => track.stop());
                 btn.classList.add('hidden');
                 document.getElementById('bio-status').classList.remove('hidden');
+                // Habilita el panel de 2FA que estaba opaco y bloqueado
                 document.getElementById('panel-2fa').classList.remove('opacity-50', 'pointer-events-none');
             }, 1500);
         }
 
+        // Código fijo de simulación (en producción se generaría y enviaría desde el servidor)
         let codigoReal = "123456";
 
+        /**
+         * enviarCodigoEmail — Simula el envío de un código OTP de 6 dígitos al correo.
+         * Actualmente muestra el código en un alert (modo demo).
+         * Oculta el formulario de email y muestra el campo del código.
+         */
         function enviarCodigoEmail() {
             const email = document.getElementById('f-email').value;
             if (!email.includes('@')) { alert("Ingresa un correo válido."); return; }
@@ -356,44 +411,52 @@
             }, 1000);
         }
 
+        /**
+         * finalizarRegistro — Valida el OTP y envía el alta a POST /api/registro-ciudadano.
+         * Body enviado: { ine, nombre, password, cp }
+         * En caso de éxito, redirige al login (/).
+         * En caso de error, muestra un toast en la esquina superior derecha durante 4s.
+         */
         async function finalizarRegistro() {
             const codigoIngresado = document.getElementById('f-codigo').value;
-            const curp = document.getElementById('f-curp').value;
-            const passwordCreada = document.getElementById('f-password').value;
-            const cpValido = document.getElementById('f-cp').value.trim(); // <-- CAPTURAMOS EL CP DEFINITIVO
+            const curp            = document.getElementById('f-curp').value;
+            const passwordCreada  = document.getElementById('f-password').value;
+            const cpValido        = document.getElementById('f-cp').value.trim();
 
             if (codigoIngresado !== codigoReal) {
                 alert("❌ Código incorrecto. Intenta de nuevo.");
                 return;
             }
 
-            const nombreCompleto = `${document.getElementById('f-ap-pat').value} ${document.getElementById('f-ap-mat').value} ${document.getElementById('f-nombre').value}`.trim().toUpperCase();
+            // Construye el nombre completo combinando los tres campos
+            const nombreCompleto = `${document.getElementById('f-ap-pat').value} ${document.getElementById('f-ap-mat').value} ${document.getElementById('f-nombre').value}`
+                .trim().toUpperCase();
 
             const btnFinalizar = document.getElementById('btn-finalizar');
             btnFinalizar.innerHTML = `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>`;
             btnFinalizar.disabled = true;
 
             try {
-                // LLAMADA A NUESTRO NUEVO CONTROLADOR DE AUTH
                 const respuesta = await fetch('/api/registro-ciudadano', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        ine: document.getElementById('f-clave').value.trim() || curp,
-                        nombre: nombreCompleto,
+                        // Si el OCR extrajo la Clave de Elector, se usa; si no, se usa la CURP como fallback
+                        ine:      document.getElementById('f-clave').value.trim() || curp,
+                        nombre:   nombreCompleto,
                         password: passwordCreada,
-                        cp: cpValido // <-- AHORA ENVIAMOS EL CÓDIGO POSTAL AL SERVIDOR
+                        cp:       cpValido
                     })
                 });
 
                 const datos = await respuesta.json();
-
                 if (!respuesta.ok) throw new Error(datos.error || "Error desconocido");
 
                 alert(`✅ ¡Registro Exitoso y Verificado!\nTu ubicación ha sido procesada.\n\nSerás redirigido al Login para votar.`);
                 window.location.href = '/';
 
             } catch (error) {
+                // Toast de error visible 4 segundos
                 const toast = document.getElementById('toast-error');
                 toast.innerText = error.message;
                 toast.classList.remove('hidden');
@@ -405,4 +468,5 @@
         }
     </script>
 </body>
+
 </html>
