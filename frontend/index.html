@@ -65,7 +65,7 @@
                 </div>
 
                 <button type="submit" id="btn-login"
-                    class="w-full bg-[#1e40af] hover:bg-[#1e3a8a] text-white font-medium py-2.5 rounded-md transition duration-200 flex justify-center items-center gap-2 mt-2">
+                    class="w-full bg-[#1e40af] hover:bg-[#1e3a8a] text-white font-medium py-2.5 rounded-md transition duration-200 flex justify-center items-center gap-2 mt-2 shadow-md">
                     Ingresar al sistema
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -82,16 +82,27 @@
                 </a>
             </div>
 
+            <div class="mt-8 bg-blue-50/60 p-5 rounded-2xl border border-blue-100 text-center shadow-sm">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Transparencia Pública</p>
+                <p class="text-xs text-slate-500 mb-4 px-2">Cualquier ciudadano u ONG puede auditar la integridad de las
+                    elecciones sin necesidad de registrarse.</p>
+
+                <a href="/observador.html"
+                    class="inline-flex items-center justify-center gap-2 w-full bg-white border-2 border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white font-bold py-2.5 rounded-xl transition-all shadow-sm">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Ir a la Caja de Cristal
+                </a>
+            </div>
+
         </div>
     </main>
 
     <script>
-        /**
-         * iniciarSesion — Maneja el submit del formulario de login.
-         * Llama a POST /api/login, guarda el JWT en localStorage
-         * y los datos de sesión en sessionStorage, luego redirige
-         * a la página correspondiente al rol (admin.html / ciudadano.html).
-         */
         async function iniciarSesion(event) {
             event.preventDefault();
 
@@ -102,7 +113,6 @@
 
             errorMsg.classList.add('hidden');
             btn.disabled = true;
-            // Muestra spinner mientras espera respuesta del servidor
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
             try {
@@ -116,15 +126,12 @@
 
                 if (!respuesta.ok) throw new Error(datos.error);
 
-                // JWT con vida de 8h; se requiere en cada petición protegida
                 localStorage.setItem('sipac_token', datos.token);
 
-                // Datos de sesión visual (rol, nombre, INE); no son secretos
                 sessionStorage.setItem('sesion_ine', datos.ine);
                 sessionStorage.setItem('sesion_nombre', datos.nombre);
                 sessionStorage.setItem('sesion_rol', datos.rol);
 
-                // El servidor decide la ruta de redirección según el rol
                 window.location.href = datos.redirect;
 
             } catch (error) {

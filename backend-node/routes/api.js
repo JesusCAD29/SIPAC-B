@@ -24,22 +24,23 @@ const router = express.Router();
 
 const { verificarToken, soloAdmin } = require('../middleware/auth');
 
-const authController    = require('../controllers/authController');
-const adminController   = require('../controllers/adminController');
+const authController = require('../controllers/authController');
+const adminController = require('../controllers/adminController');
 const votacionController = require('../controllers/votacionController');
 
-// --- Rutas Públicas ---
+// --- Rutas Públicas (Transparencia y Acceso) ---
 router.post('/registro-ciudadano', authController.registro);
-router.post('/login',              authController.login);
+router.post('/login', authController.login);
+// 👇 Estas 3 rutas ahora son públicas para la Caja de Cristal
+router.get('/blockchain', votacionController.obtenerBlockchain);
+router.get('/elecciones/activas', votacionController.obtenerEleccionesActivas);
+router.get('/estadisticas-completo', adminController.obtenerEstadisticasGlobales);
 
 // --- Rutas Protegidas (Requieren Token) ---
-router.get('/blockchain',          verificarToken, votacionController.obtenerBlockchain);
-router.get('/elecciones/activas',  verificarToken, votacionController.obtenerEleccionesActivas);
-router.post('/votar',              verificarToken, votacionController.emitirVoto);
+router.post('/votar', verificarToken, votacionController.emitirVoto);
 
 // --- Rutas de Administrador ---
-router.get('/padron',                 verificarToken, soloAdmin, adminController.obtenerPadron);
-router.post('/elecciones',            verificarToken, soloAdmin, adminController.crearEleccion);
-router.get('/estadisticas-completo',  verificarToken, soloAdmin, adminController.obtenerEstadisticasGlobales);
+router.get('/padron', verificarToken, soloAdmin, adminController.obtenerPadron);
+router.post('/elecciones', verificarToken, soloAdmin, adminController.crearEleccion);
 
 module.exports = router;

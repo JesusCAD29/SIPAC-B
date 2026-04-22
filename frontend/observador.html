@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPAC-B | Analítica Avanzada e IA</title>
+    <title>SIPAC-B | Portal Público de Transparencia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/auth.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body class="bg-[#0f172a] text-slate-100 font-sans min-h-screen">
@@ -18,19 +19,21 @@
                 <div class="bg-indigo-600 p-1.5 rounded-lg shadow-lg shadow-indigo-600/20">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                 </div>
-                <h1 class="text-lg font-bold tracking-tight">SIPAC-B <span class="text-indigo-400">Analítica IA</span>
-                </h1>
+                <h1 class="text-lg font-bold tracking-tight">SIPAC-B <span class="text-indigo-400">Caja de
+                        Cristal</span></h1>
             </div>
-            <button onclick="location.href='/admin.html'"
+            <button onclick="location.href='/index.html'"
                 class="text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 rounded-xl transition-all flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                Volver a Gestión
+                Volver a inicio
             </button>
         </div>
     </nav>
@@ -39,16 +42,10 @@
 
         <div
             class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-8 opacity-5">
-                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M13 14.5s2 3 5 3 4-2 4-2V3s-1.5 1-4.5 1-4.5-2-4.5-2-1.5 2-4.5 2-4.5-1-4.5-1v12.5s1.5-1 4.5-1 4.5 2 4.5 2z" />
-                </svg>
-            </div>
             <div class="relative z-10">
                 <h3 class="text-xl font-black text-white mb-1">Filtro de Inteligencia Electoral</h3>
-                <p class="text-slate-400 text-sm">Selecciona un proceso para auditar los votos y propuestas
-                    categorizadas.</p>
+                <p class="text-slate-400 text-sm">Selecciona un proceso para auditar los votos y datos en tiempo real.
+                </p>
             </div>
             <div class="relative z-10 w-full md:w-72">
                 <select id="selector-elecciones"
@@ -89,6 +86,16 @@
             </div>
         </div>
 
+        <div class="bg-[#1e293b] p-8 rounded-3xl border border-slate-700 shadow-2xl mb-10">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-base font-bold text-blue-400 uppercase tracking-widest">Mapa de Participación Ciudadana
+                </h3>
+                <span
+                    class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-1 rounded">GEOLOCALIZACIÓN</span>
+            </div>
+            <div id="mapa-electoral" class="h-[400px] w-full rounded-2xl border border-slate-700 z-0 relative"></div>
+        </div>
+
         <div class="bg-[#1e293b] rounded-3xl border border-slate-700 shadow-2xl overflow-hidden mb-10">
             <div class="p-6 bg-slate-900/40 border-b border-slate-700">
                 <h3 class="font-bold text-lg">Propuestas Procesadas por IA</h3>
@@ -103,204 +110,166 @@
                             <th class="px-6 py-4 text-right">Confianza</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-ia" class="divide-y divide-slate-800">
-                    </tbody>
+                    <tbody id="tabla-ia" class="divide-y divide-slate-800"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="bg-[#1e293b] rounded-3xl border border-slate-700 shadow-2xl overflow-hidden">
-            <div class="p-6 bg-slate-900/40 border-b border-slate-700 flex justify-between items-center">
-                <h3 class="font-bold text-lg">Transacciones de Bloques</h3>
-                <code class="text-[10px] text-indigo-400 bg-indigo-400/5 px-2 py-1 rounded">ORDEN CRONOLÓGICO</code>
+        <div class="bg-[#1e293b] rounded-3xl border border-slate-700 shadow-2xl overflow-hidden mb-10">
+            <div
+                class="p-6 bg-slate-900/40 border-b border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+                <h3 class="font-bold text-lg">Explorador de Bloques (Ledger)</h3>
+
+                <div class="relative w-full md:w-96">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="buscador-blockchain"
+                        class="w-full bg-[#0f172a] border border-slate-600 text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block pl-10 p-2.5 outline-none"
+                        placeholder="Buscar por Folio, Hash o Índice...">
+                </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead>
+
+            <div class="overflow-x-auto h-[400px] overflow-y-auto">
+                <table class="w-full text-left text-sm relative">
+                    <thead class="sticky top-0 bg-[#1e293b] shadow-md z-10">
                         <tr class="text-[10px] font-black text-slate-500 uppercase border-b border-slate-700">
                             <th class="px-6 py-4">Índice</th>
                             <th class="px-6 py-4">Timestamp</th>
-                            <th class="px-6 py-4">Firma Digital (Hash)</th>
-                            <th class="px-6 py-4 text-right">Contenido</th>
+                            <th class="px-6 py-4">Firma Digital (Hash) / Voto</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-blockchain" class="divide-y divide-slate-800">
-                    </tbody>
+                    <tbody id="tabla-blockchain" class="divide-y divide-slate-800"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
     <script>
-        // Instancias de Chart.js; se guardan para destruirlas antes de redibujar
-        let chartVotos, chartIA;
-        // ID de la elección seleccionada en el selector; null = sin filtro
+        let chartVotos, chartIA, mapa;
         let eleccionIdGlobal = null;
+        let cadenaGlobal = []; // Guarda la cadena completa para el buscador
 
-        /**
-         * Al cargar el DOM:
-         *  1. Verifica acceso de rol 'admin'.
-         *  2. Puebla el selector con las elecciones disponibles.
-         *  3. Escucha cambios en el selector para recargar todas las gráficas filtradas.
-         */
         document.addEventListener('DOMContentLoaded', () => {
-            if (!verificarAccesoProtegido('admin')) return;
+            inicializarMapa();
             cargarSelectorElecciones();
 
             document.getElementById('selector-elecciones').addEventListener('change', (e) => {
                 eleccionIdGlobal = e.target.value;
                 cargarTodo();
             });
+
+            // Lógica del Buscador en tiempo real
+            document.getElementById('buscador-blockchain').addEventListener('input', (e) => {
+                const termino = e.target.value.toLowerCase();
+                const bloquesFiltrados = cadenaGlobal.filter(b =>
+                    b.hash.toLowerCase().includes(termino) ||
+                    b.index.toString() === termino ||
+                    (b.data && b.data.folio && b.data.folio.toLowerCase().includes(termino))
+                );
+                renderBlockchain(bloquesFiltrados);
+            });
         });
 
-        /**
-         * cargarSelectorElecciones — Llena el <select> con los títulos de cada elección.
-         * Usa el _id de Mongo como value para filtrarlo en las siguientes llamadas.
-         */
+        function inicializarMapa() {
+            mapa = L.map('mapa-electoral').setView([20.1011, -98.7591], 12);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CARTO',
+                maxZoom: 20
+            }).addTo(mapa);
+        }
+
         async function cargarSelectorElecciones() {
             try {
-                const respuesta = await fetchProtegido('/api/elecciones/activas');
+                // Ahora es fetch público
+                const respuesta = await fetch('/api/elecciones/activas');
                 const elecciones = await respuesta.json();
                 const selector = document.getElementById('selector-elecciones');
                 selector.innerHTML = '<option value="">-- Selecciona una Elección --</option>';
                 elecciones.forEach(e => {
                     const opt = document.createElement('option');
                     opt.value = e._id;
-                    opt.text  = e.titulo;
+                    opt.text = e.titulo;
                     selector.appendChild(opt);
                 });
             } catch (e) { console.error(e); }
         }
 
-        /**
-         * cargarTodo — Carga en paralelo blockchain y estadísticas para la elección seleccionada.
-         * No hace nada si no hay elección seleccionada.
-         */
         async function cargarTodo() {
             if (!eleccionIdGlobal) return;
 
             try {
-                // Cadena filtrada para auditoría
-                const resBC   = await fetchProtegido(`/api/blockchain?eleccionId=${eleccionIdGlobal}`);
-                const dataBC  = await resBC.json();
-                renderBlockchain(dataBC.cadena);
+                // Fetch público
+                const resBC = await fetch(`/api/blockchain?eleccionId=${eleccionIdGlobal}`);
+                const dataBC = await resBC.json();
+                cadenaGlobal = dataBC.cadena;
+                renderBlockchain(cadenaGlobal);
 
-                // Estadísticas de votos + análisis NLP filtradas por elección
-                const resStats = await fetchProtegido(`/api/estadisticas-completo?eleccionId=${eleccionIdGlobal}`);
-                const stats    = await resStats.json();
+                const resStats = await fetch(`/api/estadisticas-completo?eleccionId=${eleccionIdGlobal}`);
+                const stats = await resStats.json();
 
                 renderCharts(stats.votos, stats.ia);
                 renderTablaIA(stats.propuestas);
+
+                // Refrescar mapa (Solo un pin representativo por ahora)
+                L.marker([20.1011, -98.7591]).addTo(mapa).bindPopup('Participación en Zona Centro').openPopup();
+
             } catch (e) { console.error(e); }
         }
 
-        /**
-         * renderCharts — Dibuja las gráficas de Chart.js.
-         * Destruye instancias previas para evitar memory leaks al redibujar.
-         *
-         * @param {object} votos - { candidato: count } — datos para la gráfica de barras.
-         * @param {object} ia    - { categoría: count } — datos para la dona NLP.
-         */
         function renderCharts(votos, ia) {
             if (chartVotos) chartVotos.destroy();
-            if (chartIA)    chartIA.destroy();
+            if (chartIA) chartIA.destroy();
 
-            const ctxVotos  = document.getElementById('chartVotos').getContext('2d');
+            const ctxVotos = document.getElementById('chartVotos').getContext('2d');
             const gradVotos = ctxVotos.createLinearGradient(0, 0, 0, 400);
             gradVotos.addColorStop(0, '#6366f1');
             gradVotos.addColorStop(1, '#312e81');
 
-            // Gráfica de barras: distribución de votos por candidato
             chartVotos = new Chart(ctxVotos, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(votos),
-                    datasets: [{
-                        label: 'Votos Registrados',
-                        data: Object.values(votos),
-                        backgroundColor: gradVotos,
-                        borderRadius: 12,
-                        borderSkipped: false,
-                        barThickness: 40
-                    }]
+                    datasets: [{ label: 'Votos', data: Object.values(votos), backgroundColor: gradVotos, borderRadius: 12, barThickness: 40 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 2000, easing: 'easeOutQuart' },
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1500 }, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } } }
             });
 
-            // Gráfica de dona: categorías NLP de propuestas ciudadanas
             chartIA = new Chart(document.getElementById('chartIA'), {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(ia),
-                    datasets: [{
-                        data: Object.values(ia),
-                        backgroundColor: ['#ec4899', '#06b6d4', '#eab308', '#22c55e', '#a855f7'],
-                        borderWidth: 0,
-                        hoverOffset: 20
-                    }]
+                    datasets: [{ data: Object.values(ia), backgroundColor: ['#ec4899', '#06b6d4', '#eab308', '#22c55e', '#a855f7'], borderWidth: 0, hoverOffset: 20 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '44%',
-                    animation: { animateRotate: true, duration: 2500 },
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: '#cbd5e1', usePointStyle: true, padding: 20 } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, cutout: '44%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
             });
         }
 
-        /**
-         * renderTablaIA — Inyecta las filas de propuestas clasificadas por NLP.
-         * Colorea la confianza: verde si > 85%, amarillo si es menor.
-         *
-         * @param {object[]} propuestas - Array de documentos Propuesta con texto, categoriaIA y confianzaIA.
-         */
         function renderTablaIA(propuestas) {
             const tbody = document.getElementById('tabla-ia');
             tbody.innerHTML = propuestas.length > 0
                 ? propuestas.map(p => `
                     <tr class="hover:bg-slate-800/50 transition-colors">
                         <td class="px-6 py-4 text-slate-300 text-sm italic">"${p.texto}"</td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase">
-                                ${p.categoriaIA}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <span class="font-mono text-xs ${p.confianzaIA > 85 ? 'text-green-400' : 'text-yellow-400'}">${p.confianzaIA}%</span>
-                        </td>
+                        <td class="px-6 py-4"><span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase">${p.categoriaIA}</span></td>
+                        <td class="px-6 py-4 text-right"><span class="font-mono text-xs ${p.confianzaIA > 85 ? 'text-green-400' : 'text-yellow-400'}">${p.confianzaIA}%</span></td>
                     </tr>
                 `).join('')
-                : '<tr><td colspan="3" class="px-6 py-10 text-center text-slate-500 italic">No hay propuestas procesadas para esta elección.</td></tr>';
+                : '<tr><td colspan="3" class="px-6 py-10 text-center text-slate-500 italic">No hay propuestas procesadas.</td></tr>';
         }
 
-        /**
-         * renderBlockchain — Muestra la cadena de bloques en modo auditoría.
-         * Abrevia el hash a 25 caracteres para que quepa en la celda.
-         * El Bloque Génesis (index 0) se etiqueta diferenciado de los votos cifrados.
-         *
-         * @param {object[]} cadena - Array de bloques de la blockchain.
-         */
         function renderBlockchain(cadena) {
             const tbody = document.getElementById('tabla-blockchain');
             tbody.innerHTML = cadena.map(b => `
                 <tr class="hover:bg-slate-800/30 transition-colors">
                     <td class="px-6 py-4 font-bold text-slate-500">[${b.index}]</td>
                     <td class="px-6 py-4 text-xs text-slate-400">${b.timestamp}</td>
-                    <td class="px-6 py-4"><code class="text-[10px] text-green-500 bg-green-500/5 px-2 py-1 rounded">${b.hash.substring(0, 25)}...</code></td>
-                    <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                        ${b.index === 0 ? 'Bloque Génesis' : 'Voto Cifrado'}
+                    <td class="px-6 py-4 flex flex-col gap-1">
+                        <code class="text-[10px] text-green-500 bg-green-500/5 px-2 py-1 rounded w-fit">${b.hash}</code>
+                        ${b.index !== 0 && b.data && b.data.folio ? `<span class="text-xs text-slate-400 mt-1">Folio de Voto: <span class="text-indigo-300 font-mono">${b.data.folio}</span></span>` : '<span class="text-xs italic text-slate-500 mt-1">Bloque Génesis</span>'}
                     </td>
                 </tr>
             `).join('');
