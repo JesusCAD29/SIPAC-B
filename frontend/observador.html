@@ -39,7 +39,6 @@
     </nav>
 
     <main class="max-w-7xl mx-auto p-6 lg:p-10">
-
         <div
             class="bg-[#1e293b] p-6 rounded-3xl border border-slate-700 shadow-2xl mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
             <div class="relative z-10">
@@ -119,20 +118,45 @@
             <div
                 class="p-6 bg-slate-900/40 border-b border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 class="font-bold text-lg">Explorador de Bloques (Ledger)</h3>
-
-                <div class="relative w-full md:w-96">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <div class="relative w-full sm:w-72">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="buscador-blockchain"
+                            class="w-full bg-[#0f172a] border border-slate-600 text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block pl-10 p-2.5 outline-none transition-all"
+                            placeholder="Buscar Folio o Hash...">
                     </div>
-                    <input type="text" id="buscador-blockchain"
-                        class="w-full bg-[#0f172a] border border-slate-600 text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block pl-10 p-2.5 outline-none"
-                        placeholder="Buscar por Folio, Hash o Índice...">
+                    <button onclick="exportarBitacoraCSV('filtrada')"
+                        class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex justify-center items-center gap-2 transition-all border border-green-500">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Descargar Bitácora Elección
+                    </button>
+
+                    <button onclick="exportarBitacoraCSV('global')"
+                        class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all border border-slate-600 flex justify-center items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-2a4 4 0 00-4-4H5m11 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5a2 2 0 012-2h8a2 2 0 012 2z" />
+                        </svg>
+                        Exportar Ledger Global
+                    </button>
+                    <button onclick="abrirModalCompleto()"
+                        class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-all border border-slate-600 flex justify-center items-center gap-2 whitespace-nowrap shadow-lg">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                        Ver Cadena Global
+                    </button>
                 </div>
             </div>
-
             <div class="overflow-x-auto h-[400px] overflow-y-auto">
                 <table class="w-full text-left text-sm relative">
                     <thead class="sticky top-0 bg-[#1e293b] shadow-md z-10">
@@ -146,135 +170,49 @@
                 </table>
             </div>
         </div>
+        <div id="modal-blockchain"
+            class="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md hidden flex-col justify-center items-center p-4 md:p-10 transition-opacity">
+            <div
+                class="bg-[#0f172a] border border-slate-700 w-full h-full max-w-7xl max-h-full rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+                <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                    <div>
+                        <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                            <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            Libro Mayor Global (Raw Ledger)
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-1">Auditoría completa de todas las transacciones y
+                            elecciones alojadas en la red.</p>
+                    </div>
+                    <button onclick="cerrarModalCompleto()"
+                        class="bg-slate-800 hover:bg-red-500 text-white p-2 rounded-xl transition-colors border border-slate-700 hover:border-red-500">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="overflow-auto flex-grow p-0">
+                    <table class="w-full text-left text-sm relative">
+                        <thead class="sticky top-0 bg-[#1e293b] shadow-md z-10">
+                            <tr class="text-[10px] font-black text-slate-500 uppercase border-b border-slate-700">
+                                <th class="px-6 py-4">ID</th>
+                                <th class="px-6 py-4">Fecha</th>
+                                <th class="px-6 py-4">Hash</th>
+                                <th class="px-6 py-4">Elección</th>
+                                <th class="px-6 py-4">Voto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-modal-blockchain" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <script>
-        let chartVotos, chartIA, mapa;
-        let eleccionIdGlobal = null;
-        let cadenaGlobal = []; // Guarda la cadena completa para el buscador
-
-        document.addEventListener('DOMContentLoaded', () => {
-            inicializarMapa();
-            cargarSelectorElecciones();
-
-            document.getElementById('selector-elecciones').addEventListener('change', (e) => {
-                eleccionIdGlobal = e.target.value;
-                cargarTodo();
-            });
-
-            // Lógica del Buscador en tiempo real
-            document.getElementById('buscador-blockchain').addEventListener('input', (e) => {
-                const termino = e.target.value.toLowerCase();
-                const bloquesFiltrados = cadenaGlobal.filter(b =>
-                    b.hash.toLowerCase().includes(termino) ||
-                    b.index.toString() === termino ||
-                    (b.data && b.data.folio && b.data.folio.toLowerCase().includes(termino))
-                );
-                renderBlockchain(bloquesFiltrados);
-            });
-        });
-
-        function inicializarMapa() {
-            mapa = L.map('mapa-electoral').setView([20.1011, -98.7591], 12);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap & CARTO',
-                maxZoom: 20
-            }).addTo(mapa);
-        }
-
-        async function cargarSelectorElecciones() {
-            try {
-                // Ahora es fetch público
-                const respuesta = await fetch('/api/elecciones/activas');
-                const elecciones = await respuesta.json();
-                const selector = document.getElementById('selector-elecciones');
-                selector.innerHTML = '<option value="">-- Selecciona una Elección --</option>';
-                elecciones.forEach(e => {
-                    const opt = document.createElement('option');
-                    opt.value = e._id;
-                    opt.text = e.titulo;
-                    selector.appendChild(opt);
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        async function cargarTodo() {
-            if (!eleccionIdGlobal) return;
-
-            try {
-                // Fetch público
-                const resBC = await fetch(`/api/blockchain?eleccionId=${eleccionIdGlobal}`);
-                const dataBC = await resBC.json();
-                cadenaGlobal = dataBC.cadena;
-                renderBlockchain(cadenaGlobal);
-
-                const resStats = await fetch(`/api/estadisticas-completo?eleccionId=${eleccionIdGlobal}`);
-                const stats = await resStats.json();
-
-                renderCharts(stats.votos, stats.ia);
-                renderTablaIA(stats.propuestas);
-
-                // Refrescar mapa (Solo un pin representativo por ahora)
-                L.marker([20.1011, -98.7591]).addTo(mapa).bindPopup('Participación en Zona Centro').openPopup();
-
-            } catch (e) { console.error(e); }
-        }
-
-        function renderCharts(votos, ia) {
-            if (chartVotos) chartVotos.destroy();
-            if (chartIA) chartIA.destroy();
-
-            const ctxVotos = document.getElementById('chartVotos').getContext('2d');
-            const gradVotos = ctxVotos.createLinearGradient(0, 0, 0, 400);
-            gradVotos.addColorStop(0, '#6366f1');
-            gradVotos.addColorStop(1, '#312e81');
-
-            chartVotos = new Chart(ctxVotos, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(votos),
-                    datasets: [{ label: 'Votos', data: Object.values(votos), backgroundColor: gradVotos, borderRadius: 12, barThickness: 40 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, animation: { duration: 1500 }, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } } }
-            });
-
-            chartIA = new Chart(document.getElementById('chartIA'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(ia),
-                    datasets: [{ data: Object.values(ia), backgroundColor: ['#ec4899', '#06b6d4', '#eab308', '#22c55e', '#a855f7'], borderWidth: 0, hoverOffset: 20 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '44%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
-            });
-        }
-
-        function renderTablaIA(propuestas) {
-            const tbody = document.getElementById('tabla-ia');
-            tbody.innerHTML = propuestas.length > 0
-                ? propuestas.map(p => `
-                    <tr class="hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4 text-slate-300 text-sm italic">"${p.texto}"</td>
-                        <td class="px-6 py-4"><span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase">${p.categoriaIA}</span></td>
-                        <td class="px-6 py-4 text-right"><span class="font-mono text-xs ${p.confianzaIA > 85 ? 'text-green-400' : 'text-yellow-400'}">${p.confianzaIA}%</span></td>
-                    </tr>
-                `).join('')
-                : '<tr><td colspan="3" class="px-6 py-10 text-center text-slate-500 italic">No hay propuestas procesadas.</td></tr>';
-        }
-
-        function renderBlockchain(cadena) {
-            const tbody = document.getElementById('tabla-blockchain');
-            tbody.innerHTML = cadena.map(b => `
-                <tr class="hover:bg-slate-800/30 transition-colors">
-                    <td class="px-6 py-4 font-bold text-slate-500">[${b.index}]</td>
-                    <td class="px-6 py-4 text-xs text-slate-400">${b.timestamp}</td>
-                    <td class="px-6 py-4 flex flex-col gap-1">
-                        <code class="text-[10px] text-green-500 bg-green-500/5 px-2 py-1 rounded w-fit">${b.hash}</code>
-                        ${b.index !== 0 && b.data && b.data.folio ? `<span class="text-xs text-slate-400 mt-1">Folio de Voto: <span class="text-indigo-300 font-mono">${b.data.folio}</span></span>` : '<span class="text-xs italic text-slate-500 mt-1">Bloque Génesis</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-    </script>
+    <script src="js/observador.js"></script>
 </body>
 
 </html>
