@@ -15,16 +15,18 @@
 const mongoose = require('mongoose');
 
 const CiudadanoSchema = new mongoose.Schema({
-    nombre:        { type: String, required: true },
-    ine:           { type: String, required: true, unique: true },
-    password:      { type: String, required: true },
-    codigoPostal:  { type: String, required: true },
+    nombre: { type: String, required: true },
+    ine: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    codigoPostal: { type: String, required: true },
     coordenadas: {
         lat: { type: Number },
         lng: { type: Number }
     },
-    haVotado:      { type: Boolean, default: false },
-    rol:           { type: String, default: 'ciudadano' },
+    haVotado: { type: Boolean, default: false },
+    // 👇 ESTE ES EL CAMPO QUE FALTABA PARA QUE MONGOOSE LO DEJE PASAR
+    eleccionesVotadas: { type: [String], default: [] },
+    rol: { type: String, default: 'ciudadano' },
     fechaRegistro: { type: Date, default: Date.now }
 });
 

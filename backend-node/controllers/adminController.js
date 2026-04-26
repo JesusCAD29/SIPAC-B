@@ -31,15 +31,16 @@ exports.obtenerPadron = async (req, res) => {
 
 /**
  * POST /api/elecciones
- * Crea y persiste un nuevo proceso electoral.
- * Body esperado: { titulo, descripcion, opciones: string[] }
+ * Crea y persiste un nuevo proceso electoral con restricciones de zona.
+ * Body esperado: { titulo, descripcion, opciones: string[], cpPermitidos: string[] }
  */
 exports.crearEleccion = async (req, res) => {
     try {
         const nuevaEleccion = new Eleccion({
             titulo: req.body.titulo,
             descripcion: req.body.descripcion,
-            opciones: req.body.opciones
+            opciones: req.body.opciones,
+            cpPermitidos: req.body.cpPermitidos || []
         });
         await nuevaEleccion.save();
         res.json({ mensaje: '✅ Proceso electoral creado exitosamente' });
@@ -106,5 +107,24 @@ exports.obtenerEstadisticasGlobales = async (req, res) => {
         res.json({ votos: conteoVotos, ia: conteoIA, propuestas });
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener estadísticas filtradas' });
+    }
+};
+/**
+ * PUT /api/cambiar-rol
+ * Cambia el rol de un usuario específico ('ciudadano' <-> 'admin')
+ */
+exports.cambiarRol = async (req, res) => {
+    try {
+        const { idUsuario, nuevoRol } = req.body;
+
+        // Validación básica de seguridad
+        if (!['admin', 'ciudadano'].includes(nuevoRol)) {
+            return res.status(400).json({ error: 'Rol no válido' });
+        }
+
+        await Ciudadano.findByIdAndUpdate(idUsuario, { rol: nuevoRol });
+        res.json({ mensaje: `Rol actualizado a ${nuevoRol.toUpperCase()}` });
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno al cambiar el rol' });
     }
 };

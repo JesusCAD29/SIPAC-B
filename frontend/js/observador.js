@@ -229,7 +229,7 @@ function exportarBitacoraCSV(tipo = 'filtrada') {
         const hash = b.hash;
         const prev = b.previousHash || "0";
         const eleccion = (b.index === 0) ? "GENESIS" : (b.data.eleccionId || "N/A");
-        
+
         // El contenido es el Folio o el Voto
         let contenido = "N/A";
         if (b.index === 0) contenido = "BLOQUE_INICIAL";
@@ -282,10 +282,10 @@ function abrirModalCompleto() {
         }
 
         // --- CASO B: BLOQUE DE VOTO ---
-        
+
         const eleccion = (b.data && b.data.eleccionId) ? b.data.eleccionId : 'N/A';
-        const votoDisplay = (b.data && b.data.voto) 
-            ? b.data.voto 
+        const votoDisplay = (b.data && b.data.voto)
+            ? b.data.voto
             : `<span class="text-green-500 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded text-[10px] font-black tracking-widest">ENCRIPTADO</span>`;
 
         return `

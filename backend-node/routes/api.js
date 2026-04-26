@@ -31,16 +31,17 @@ const votacionController = require('../controllers/votacionController');
 // --- Rutas Públicas (Transparencia y Acceso) ---
 router.post('/registro-ciudadano', authController.registro);
 router.post('/login', authController.login);
-// 👇 Estas 3 rutas ahora son públicas para la Caja de Cristal
 router.get('/blockchain', votacionController.obtenerBlockchain);
 router.get('/elecciones/activas', votacionController.obtenerEleccionesActivas);
 router.get('/estadisticas-completo', adminController.obtenerEstadisticasGlobales);
 
 // --- Rutas Protegidas (Requieren Token) ---
+router.get('/elecciones/mis-elecciones', verificarToken, votacionController.obtenerMisElecciones);
 router.post('/votar', verificarToken, votacionController.emitirVoto);
 
 // --- Rutas de Administrador ---
 router.get('/padron', verificarToken, soloAdmin, adminController.obtenerPadron);
 router.post('/elecciones', verificarToken, soloAdmin, adminController.crearEleccion);
+router.put('/cambiar-rol', verificarToken, soloAdmin, adminController.cambiarRol);
 
 module.exports = router;

@@ -98,9 +98,12 @@
                 <p id="hash-voto" class="text-green-400 font-mono text-xs"></p>
             </div>
 
-            <button onclick="cerrarSesion()"
-                class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">
-                Finalizar y Salir
+            <button onclick="window.location.href='/ciudadano.html'"
+                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                <span>Continuar con mis votaciones</span>
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
             </button>
         </div>
     </div>
@@ -122,7 +125,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             if (!verificarAccesoProtegido()) return;
 
-            ineSesion   = sessionStorage.getItem('sesion_ine');
+            ineSesion = sessionStorage.getItem('sesion_ine');
             nombreSesion = sessionStorage.getItem('sesion_nombre');
 
             if (!ineSesion) {
