@@ -24,7 +24,6 @@ const CiudadanoSchema = new mongoose.Schema({
         lng: { type: Number }
     },
     haVotado: { type: Boolean, default: false },
-    // 👇 ESTE ES EL CAMPO QUE FALTABA PARA QUE MONGOOSE LO DEJE PASAR
     eleccionesVotadas: { type: [String], default: [] },
     rol: { type: String, default: 'ciudadano' },
     fechaRegistro: { type: Date, default: Date.now }

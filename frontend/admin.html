@@ -13,195 +13,436 @@
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 </head>
 
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6">
 
-        <aside class="w-full lg:w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col z-10">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-indigo-600 p-2 rounded-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
+            <div class="flex justify-between items-center py-5">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 p-2 rounded-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tighter">SIPAC-B <span
+                            class="text-indigo-400 text-xs block -mt-1">ADMIN CENTER</span></h1>
                 </div>
-                <h1 class="text-xl font-bold tracking-tighter">SIPAC-B <span
-                        class="text-indigo-400 text-xs block">ADMIN</span></h1>
+
+                <button onclick="cerrarSesionGlobal()"
+                    class="flex items-center gap-2 border border-slate-600 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50 text-slate-300 px-4 py-2 rounded-lg text-sm font-bold transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span class="hidden md:inline">Cerrar Sesión</span>
+                </button>
             </div>
 
-            <nav class="space-y-2 flex-grow">
-                <a href="#"
-                    class="flex items-center gap-3 bg-indigo-600/10 text-indigo-400 px-4 py-3 rounded-xl font-bold">
+            <nav class="flex gap-8 mt-2">
+                <button id="btn-tab-padron" onclick="cambiarPestaña('padron')"
+                    class="pb-3 border-b-2 border-indigo-500 text-indigo-400 font-bold transition-all flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Padrón Electoral
-                </a>
-                <a href="/observador.html"
-                    class="flex items-center gap-3 text-slate-400 hover:bg-slate-700/50 px-4 py-3 rounded-xl transition">
+                    Padrón
+                </button>
+                <button id="btn-tab-elecciones" onclick="cambiarPestaña('elecciones')"
+                    class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-bold transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Nuevo Proceso
+                </button>
+                <button id="btn-tab-gestion" onclick="cambiarPestaña('gestion')"
+                    class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-bold transition-all flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Resultados Blockchain
-                </a>
+                    Gestión de Urnas
+                </button>
             </nav>
+        </div>
+    </header>
 
-            <div class="mt-auto pt-10">
-                <button onclick="cerrarSesionGlobal()"
-                    class="w-full border border-slate-700 hover:bg-slate-700 text-slate-300 py-2 rounded-lg text-sm transition">Cerrar
-                    Sesión</button>
+    <main class="flex-grow p-6 lg:p-10 w-full max-w-7xl mx-auto z-0">
+
+        <div id="tab-padron" class="block animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Inteligencia Electoral</h2>
+                    <p class="text-slate-400 text-sm">Monitoreo en tiempo real del padrón ciudadano.</p>
+                </div>
+                <button onclick="cargarPadron()"
+                    class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-sm">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Sincronizar Datos
+                </button>
             </div>
-        </aside>
 
-        <main class="flex-grow p-6 lg:p-10 z-0">
-            <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                    <p class="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Total Ciudadanos</p>
+                    <h3 id="stat-total" class="text-4xl font-black text-white">--</h3>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                    <p class="text-green-400/80 text-sm font-bold uppercase tracking-wider mb-1">Votos Emitidos</p>
+                    <h3 id="stat-votaron" class="text-4xl font-black text-green-400">--</h3>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+                    <p class="text-indigo-400/80 text-sm font-bold uppercase tracking-wider mb-1">Participación</p>
+                    <h3 id="stat-porcentaje" class="text-4xl font-black text-indigo-400">--%</h3>
+                </div>
+            </div>
 
-                <header class="mb-8">
-                    <h2 class="text-3xl font-bold text-white">Centro de Mando Electoral</h2>
-                    <p class="text-slate-400">Creación de procesos y monitoreo de ciudadanos.</p>
-                </header>
+            <div
+                class="bg-slate-800 rounded-2xl border border-slate-700 mb-8 shadow-xl overflow-hidden p-6 relative z-0">
+                <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    Inteligencia Geoespacial
+                </h3>
+                <p class="text-slate-400 text-sm mb-4">Mapa de calor de densidad poblacional de ciudadanos registrados.
+                </p>
+                <div id="mapa-calor"
+                    class="w-full h-[400px] rounded-xl border border-slate-600 bg-slate-900 relative z-0"></div>
+            </div>
 
-                <div
-                    class="bg-slate-800 p-6 md:p-8 rounded-2xl border border-slate-700 mb-10 shadow-xl relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                    <h3 class="text-xl font-bold text-white mb-2">Configurar Nuevo Proceso Electoral</h3>
-                    <p class="text-slate-400 text-sm mb-6">Esta elección será visible inmediatamente para los ciudadanos
-                        en su panel de votación.</p>
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/50 border-b border-slate-700">
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Nombre Completo</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Identificador (INE)
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-center">Estado de
+                                    Voto</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-center">Rol
+                                    (Acción)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios" class="divide-y divide-slate-700">
+                            <tr>
+                                <td colspan="4" class="px-6 py-10 text-center text-slate-500 italic">Cargando padrón
+                                    electoral...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label
-                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Título
-                                de la Elección</label>
-                            <input type="text" id="el-titulo" placeholder="Ej. Elección de Delegado 2026"
-                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition">
+        <div id="tab-elecciones" class="hidden animate-fade-in">
+            
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-white mb-2">Configurar Nuevo Proceso</h2>
+                <p class="text-slate-400 text-sm">Define los parámetros del proceso electoral. Puedes guardar un borrador en cualquier momento.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <div class="w-full lg:w-64 shrink-0">
+                    <div class="flex flex-col gap-6 relative">
+                        <div class="absolute left-[19px] top-8 bottom-8 w-0.5 bg-slate-700/50 z-0 hidden lg:block"></div>
+
+                        <div id="nav-step-1" class="relative z-10 flex items-start gap-4 cursor-pointer transition-opacity">
+                            <div id="icon-step-1" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 ring-4 ring-slate-900 transition-colors">
+                                1
+                            </div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-emerald-400 text-sm">Información general</h4>
+                                <p class="text-[10px] text-slate-500">Título, descripción y región</p>
+                            </div>
                         </div>
-                        <div>
-                            <label
-                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Opciones
-                                (Separadas por coma)</label>
-                            <input type="text" id="el-opciones"
-                                placeholder="Ej. Planilla Roja, Planilla Azul, Abstención"
-                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition">
+
+                        <div id="nav-step-2" class="relative z-10 flex items-start gap-4 opacity-50 transition-opacity">
+                            <div id="icon-step-2" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-800 text-slate-500 border border-slate-700 ring-4 ring-slate-900 transition-colors">
+                                2
+                            </div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-slate-400 text-sm">Candidatos</h4>
+                                <p class="text-[10px] text-slate-500">Planillas y partidos</p>
+                            </div>
                         </div>
-                        <div class="md:col-span-2">
-                            <label
-                                class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Descripción
-                                del Proceso</label>
-                            <textarea id="el-desc" placeholder="Explica a los ciudadanos de qué trata esta votación..."
-                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition h-24 resize-none"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
-                                Alcance Geográfico (Región)
-                            </label>
 
-                            <select id="el-region" onchange="asignarCPsPorRegion()"
-                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition">
-                                <option value="nacional">Nacional (Todo el país)</option>
-                                <option value="hidalgo">Estado de Hidalgo (Estatal)</option>
-                                <option value="pachuca">Municipio: Pachuca de Soto</option>
-                                <option value="tizayuca">Municipio: Tizayuca</option>
-                                <option value="tulancingo">Municipio: Tulancingo</option>
-                                <option value="personalizado">Personalizado (Ingresar CPs manualmente)</option>
-                            </select>
-
-                            <input type="text" id="el-cp"
-                                class="hidden mt-3 w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-white outline-none focus:border-indigo-500 transition"
-                                placeholder="Ej. 42000, 42080">
-
-                            <p class="text-[10px] text-indigo-400 mt-2 font-medium" id="texto-region">
-                                🌍 Esta elección estará disponible para todos los ciudadanos de la República.
-                            </p>
+                        <div id="nav-step-3" class="relative z-10 flex items-start gap-4 opacity-50 transition-opacity">
+                            <div id="icon-step-3" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-slate-800 text-slate-500 border border-slate-700 ring-4 ring-slate-900 transition-colors">
+                                3
+                            </div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-slate-400 text-sm">Configuración</h4>
+                                <p class="text-[10px] text-slate-500">Fechas y opciones</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-6 flex justify-end">
-                        <button id="btn-crear-eleccion" onclick="crearEleccion()"
-                            class="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-green-600/20">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                            Publicar Elección
-                        </button>
+                    <div class="mt-12 bg-[#1a1d2d] border border-indigo-500/30 rounded-xl p-4 shadow-lg shadow-indigo-500/5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                        <p class="text-[10px] font-bold text-orange-400 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>
+                            TIP DE UX
+                        </p>
+                        <p class="text-xs text-indigo-200/70 leading-relaxed">Los ciudadanos de la región asignada verán este proceso en su app inmediatamente al publicarlo.</p>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <h3 class="text-xl font-bold text-white">Monitoreo del Padrón</h3>
-                    <button onclick="cargarPadron()"
-                        class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-sm">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="flex-grow max-w-4xl space-y-4">
+                    
+                    <div id="summary-paso-1" class="hidden bg-[#1c2033] border border-slate-700 rounded-2xl p-4 md:p-6 flex items-center justify-between animate-fade-in shadow-md">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-200 text-sm">Información general</h3>
+                                <p id="summary-text-1" class="text-xs text-slate-500 mt-0.5">Elección... · Municipio...</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="editarPaso(1)" class="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition hover:bg-emerald-500/10 px-3 py-1.5 rounded-lg">Editar</button>
+                    </div>
+
+                    <div id="form-paso-1" class="bg-[#1c2033] border border-slate-700 rounded-2xl p-6 md:p-8 animate-fade-in shadow-xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Título Oficial de la Elección *</label>
+                                <input type="text" id="el-titulo" placeholder="Ej. Elección de Delegado Tizayuca 2026" class="w-full bg-[#11131f] border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition font-medium text-sm shadow-inner">
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Descripción / Contexto *</label>
+                                <textarea id="el-desc" placeholder="Explica a los ciudadanos la importancia de esta votación..." class="w-full bg-[#11131f] border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition h-20 resize-none text-sm shadow-inner"></textarea>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Alcance Geográfico (Región) *</label>
+                                <select id="el-region" onchange="asignarCPsPorRegion()" class="w-full bg-[#11131f] border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition cursor-pointer text-sm shadow-inner appearance-none">
+                                    <option value="nacional">Nacional (Todo el país)</option>
+                                    <option value="hidalgo">Estado de Hidalgo (Estatal)</option>
+                                    <option value="pachuca">Municipio: Pachuca de Soto</option>
+                                    <option value="tizayuca">Municipio: Tizayuca</option>
+                                    <option value="tulancingo">Municipio: Tulancingo</option>
+                                </select>
+                                <input type="text" id="el-cp" class="hidden mt-3 w-full bg-[#11131f] border border-slate-700 rounded-xl px-4 py-2 text-white outline-none text-sm" placeholder="Ej. 42000, 42080">
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end border-t border-slate-700/50 pt-6">
+                            <button type="button" onclick="validarYContinuarPaso1()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-lg flex items-center gap-2 text-sm">
+                                Continuar a Candidatos
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="summary-paso-2" class="hidden bg-[#1c2033] border border-slate-700 rounded-2xl p-4 md:p-6 flex items-center justify-between animate-fade-in shadow-md mt-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-200 text-sm">Candidatos o Planillas</h3>
+                                <p id="summary-text-2" class="text-xs text-slate-500 mt-0.5">X candidatos registrados</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="editarPaso(2)" class="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition hover:bg-emerald-500/10 px-3 py-1.5 rounded-lg">Editar</button>
+                    </div>
+
+                    <div id="form-paso-2" class="hidden bg-[#1c2033] border border-slate-700 rounded-2xl p-6 md:p-8 animate-fade-in shadow-xl mt-4">
+                        
+                        <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700/50">
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                                    Candidatos o Planillas
+                                </h3>
+                                <span class="bg-emerald-500/10 text-emerald-500 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">MÍNIMO 2</span>
+                            </div>
+                            <button type="button" onclick="agregarCandidatoUI()" class="text-xs text-emerald-400 border border-emerald-400/30 hover:bg-emerald-400/10 px-3 py-1.5 rounded-lg transition font-bold flex items-center gap-1">
+                                + Añadir candidato
+                            </button>
+                        </div>
+
+                        <div id="contenedor-candidatos" class="space-y-6">
+                            </div>
+
+                        <div id="msg-error-paso2" class="hidden mt-6 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold p-4 rounded-lg flex items-center gap-3">
+                            <span class="text-red-500 bg-red-500/20 rounded-full w-5 h-5 flex items-center justify-center shrink-0">!</span> 
+                            <span>Es necesario agregar al menos 2 candidatos o planillas para poder continuar.</span>
+                        </div>
+
+                        <div class="mt-8 flex justify-between border-t border-slate-700/50 pt-6">
+                            <button type="button" onclick="editarPaso(1)" class="text-slate-400 hover:text-white px-4 py-2 text-sm font-bold transition">Volver</button>
+                            <button type="button" onclick="validarYContinuarPaso2()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-lg flex items-center gap-2 text-sm">
+                                Continuar a Configuración
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="form-paso-3" class="hidden bg-[#1c2033] border border-slate-700 rounded-2xl p-6 md:p-8 animate-fade-in shadow-xl mt-4">
+                        
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-6 pb-4 border-b border-slate-700/50">
+                            <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                            Configuración y Fechas
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Fecha de inicio de votación</label>
+                                <input type="date" id="el-fecha-inicio" class="w-full bg-[#0f111a] border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-indigo-500 transition text-sm shadow-inner">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Fecha de cierre</label>
+                                <input type="date" id="el-fecha-cierre" class="w-full bg-[#0f111a] border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-indigo-500 transition text-sm shadow-inner">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 border-t border-slate-700/50 pt-6">
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-200">Voto secreto</h4>
+                                    <p class="text-[10px] text-slate-500">Los votos no son rastreables al ciudadano</p>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" id="el-voto-secreto" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center justify-between cursor-pointer group pt-4 border-t border-slate-700/50">
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-200">Resultados en tiempo real</h4>
+                                    <p class="text-[10px] text-slate-500">Visible durante la jornada electoral</p>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" id="el-tiempo-real" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="mt-8 flex justify-between border-t border-slate-700/50 pt-6">
+                            <button type="button" onclick="editarPaso(2)" class="text-slate-400 hover:text-white px-4 py-2 text-sm font-bold transition">Volver a Candidatos</button>
+                            <button id="btn-crear-eleccion" type="button" onclick="crearEleccion()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-2.5 rounded-xl font-bold transition shadow-lg shadow-emerald-500/20 flex items-center gap-2 text-sm">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                Publicar Proceso
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-gestion" class="hidden animate-fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Administración de Procesos</h2>
+                    <p class="text-slate-400 text-sm">Control de visibilidad y edición de boletas activas.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/50 border-b border-slate-700">
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Proceso / Boleta</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Alcance</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-center">Estado
+                                    Actual</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-right">Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-gestion-elecciones" class="divide-y divide-slate-700">
+                            <tr>
+                                <td colspan="4" class="px-6 py-10 text-center text-slate-500 italic">Cargando urnas...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-editar"
+            class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
+                <div class="bg-slate-900/50 p-5 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
-                        Sincronizar Datos
+                        Editar Proceso Electoral
+                    </h3>
+                    <button onclick="cerrarModalEdicion()" class="text-slate-400 hover:text-white transition">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                        <p class="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Total Ciudadanos</p>
-                        <h3 id="stat-total" class="text-4xl font-black text-white">--</h3>
+                <div class="p-6">
+                    <input type="hidden" id="edit-id">
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Título
+                            Oficial</label>
+                        <input type="text" id="edit-titulo"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition font-bold">
                     </div>
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                        <p class="text-green-400/80 text-sm font-bold uppercase tracking-wider mb-1">Votos Emitidos</p>
-                        <h3 id="stat-votaron" class="text-4xl font-black text-green-400">--</h3>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Descripción
+                            / Contexto</label>
+                        <textarea id="edit-desc"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition h-24 resize-none"></textarea>
                     </div>
-                    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                        <p class="text-indigo-400/80 text-sm font-bold uppercase tracking-wider mb-1">Participación</p>
-                        <h3 id="stat-porcentaje" class="text-4xl font-black text-indigo-400">--%</h3>
+
+                    <div class="flex gap-3 justify-end">
+                        <button onclick="cerrarModalEdicion()"
+                            class="px-5 py-2.5 rounded-xl font-bold text-slate-300 hover:bg-slate-700 transition">Cancelar</button>
+                        <button id="btn-guardar-edicion" onclick="guardarEdicion()"
+                            class="px-6 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition">Guardar
+                            Cambios</button>
                     </div>
                 </div>
-
-                <div
-                    class="bg-slate-800 rounded-2xl border border-slate-700 mb-8 shadow-xl overflow-hidden p-6 relative z-0">
-                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
-                        Inteligencia Geoespacial
-                    </h3>
-                    <p class="text-slate-400 text-sm mb-4">Mapa de calor de densidad poblacional de ciudadanos
-                        registrados.</p>
-                    <div id="mapa-calor"
-                        class="w-full h-[400px] rounded-xl border border-slate-600 bg-slate-900 relative z-0"></div>
-                </div>
-
-                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-900/50 border-b border-slate-700">
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Nombre Completo
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Clave de Elector
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-center">Estado
-                                        de Voto</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-center">Rol
-                                        (Acción)</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase text-right">Fecha
-                                        Registro</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-usuarios" class="divide-y divide-slate-700">
-                                <tr>
-                                    <td colspan="4" class="px-6 py-10 text-center text-slate-500 italic">Cargando padrón
-                                        electoral...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <style>
+        /* Pequeña animación para suavizar el cambio de pestañas */
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 
     <script src="js/admin.js"></script>
 </body>

@@ -4,9 +4,11 @@
  * Campos:
  *  - titulo        Nombre público del proceso (ej. "Elección Municipal 2025").
  *  - descripcion   Texto libre con detalles del proceso.
- *  - opciones      Array de strings con los nombres de los candidatos o partidos.
+ *  - opciones      Array de strings con los candidatos en formato "Nombre (PARTIDO)".
+ *  - cpPermitidos  Array de prefijos de CP para restringir la elección por zona geográfica.
+ *                  Si está vacío, la elección es de alcance nacional (sin restricción).
  *  - fechaCreacion Timestamp automático de creación por el administrador.
- *  - activa        Permite activar/desactivar la elección sin eliminarla.
+ *  - activa        Permite pausar/reanudar la elección sin eliminarla del padrón.
  */
 
 const mongoose = require('mongoose');

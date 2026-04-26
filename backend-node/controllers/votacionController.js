@@ -1,3 +1,19 @@
+/**
+ * controllers/votacionController.js — Controlador de procesos de votación.
+ *
+ * Exporta:
+ *  - obtenerEleccionesActivas: Lista pública de elecciones activas (sin token).
+ *  - obtenerMisElecciones:     Elecciones disponibles para el ciudadano según su CP.
+ *                               Excluye las que ya votó (filtra por eleccionesVotadas).
+ *  - obtenerBlockchain:        Devuelve la cadena completa o filtrada por eleccionId.
+ *  - emitirVoto:               Crea un bloque nuevo, lo persiste en Mongo y actualiza
+ *                               el historial del votante. También guarda la propuesta
+ *                               ciudadana si supera los 5 caracteres (para NLP).
+ *
+ * Nota: La instancia de Blockchain se obtiene de req.app.locals.urnaElecciones
+ * (inyectada en server.js) para que todos los controladores compartan la misma cadena.
+ */
+
 const crypto = require('crypto');
 const Eleccion = require('../models/Eleccion');
 const Ciudadano = require('../models/Ciudadano');
@@ -48,8 +64,11 @@ exports.obtenerMisElecciones = async (req, res) => {
     }
 };
 
-// --- EL RESTO DE TUS FUNCIONES SE MANTIENEN INTACTAS ---
-
+/**
+ * GET /api/blockchain (PÚBLICA)
+ * Devuelve la cadena completa o filtrada por eleccionId (query param).
+ * Incluye el flag `valida` del resultado de validarCadena() para auditoría en tiempo real.
+ */
 exports.obtenerBlockchain = (req, res) => {
     const urnaElecciones = req.app.locals.urnaElecciones;
     const eleccionId = req.query.eleccionId;
@@ -68,6 +87,16 @@ exports.obtenerBlockchain = (req, res) => {
     });
 };
 
+/**
+ * POST /api/votar (PROTEGIDA — requiere token válido)
+ * Flujo:
+ *  1. Lee el INE del payload JWT (nunca del body, para evitar suplantación).
+ *  2. Verifica que el ciudadano no haya votado ya en esta elección.
+ *  3. Guarda la propuesta (si existe) para que el worker NLP la procese.
+ *  4. Crea un Bloque con un UUID anónimo como folio y lo añade a la cadena.
+ *  5. Persiste el bloque en MongoDB y actualiza el historial del votante.
+ *  6. Responde con el folio anónimo como comprobante para el ciudadano.
+ */
 exports.emitirVoto = async (req, res) => {
     const { candidato, propuesta, eleccionId } = req.body;
     const ineValidado = req.usuario.ine; 

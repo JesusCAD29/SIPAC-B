@@ -128,3 +128,68 @@ exports.cambiarRol = async (req, res) => {
         res.status(500).json({ error: 'Error interno al cambiar el rol' });
     }
 };
+
+/**
+ * PUT /api/elecciones/:id/estado
+ * Alterna el estado de una elección entre Activa y Pausada.
+ */
+exports.cambiarEstadoEleccion = async (req, res) => {
+    try {
+        const eleccion = await Eleccion.findById(req.params.id);
+        if (!eleccion) return res.status(404).json({ error: 'Elección no encontrada' });
+
+        eleccion.activa = !eleccion.activa; // Invierte el estado actual
+        await eleccion.save();
+
+        res.json({ mensaje: 'Estado actualizado', activa: eleccion.activa });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al cambiar estado' });
+    }
+};
+
+/**
+ * PUT /api/elecciones/:id
+ * Edita el título y descripción de una elección existente.
+ */
+exports.editarEleccion = async (req, res) => {
+    try {
+        const { titulo, descripcion } = req.body;
+        const eleccion = await Eleccion.findByIdAndUpdate(
+            req.params.id,
+            { titulo, descripcion },
+            { new: true }
+        );
+
+        if (!eleccion) return res.status(404).json({ error: 'Elección no encontrada' });
+        res.json({ mensaje: 'Elección actualizada exitosamente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al editar elección' });
+    }
+};
+
+/**
+ * GET /api/elecciones/todas
+ * Obtiene TODAS las elecciones (activas y pausadas) ordenadas por la más reciente.
+ */
+exports.obtenerTodasElecciones = async (req, res) => {
+    try {
+        const elecciones = await Eleccion.find().sort({ fechaCreacion: -1 });
+        res.json(elecciones);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener el historial de elecciones' });
+    }
+};
+
+/**
+ * DELETE /api/elecciones/:id
+ * Elimina permanentemente una elección de la base de datos.
+ */
+exports.eliminarEleccion = async (req, res) => {
+    try {
+        const eleccion = await Eleccion.findByIdAndDelete(req.params.id);
+        if (!eleccion) return res.status(404).json({ error: 'Elección no encontrada' });
+        res.json({ mensaje: 'Elección eliminada permanentemente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar la elección' });
+    }
+};

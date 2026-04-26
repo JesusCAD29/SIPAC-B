@@ -43,5 +43,9 @@ router.post('/votar', verificarToken, votacionController.emitirVoto);
 router.get('/padron', verificarToken, soloAdmin, adminController.obtenerPadron);
 router.post('/elecciones', verificarToken, soloAdmin, adminController.crearEleccion);
 router.put('/cambiar-rol', verificarToken, soloAdmin, adminController.cambiarRol);
+router.put('/elecciones/:id/estado', verificarToken, soloAdmin, adminController.cambiarEstadoEleccion);
+router.put('/elecciones/:id', verificarToken, soloAdmin, adminController.editarEleccion);
+router.get('/elecciones/todas', verificarToken, soloAdmin, adminController.obtenerTodasElecciones);
+router.delete('/elecciones/:id', verificarToken, soloAdmin, adminController.eliminarEleccion);
 
 module.exports = router;

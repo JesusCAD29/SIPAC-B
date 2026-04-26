@@ -1,11 +1,23 @@
 /**
- * authController.js — Controlador de autenticación de ciudadanos.
+ * controllers/authController.js — Controlador de autenticación de ciudadanos.
+ *
+ * Exporta:
+ *  - registro: Valida, geocodifica y persiste un nuevo ciudadano en el padrón.
+ *  - login:    Autentica por INE + password; aplica bloqueo inteligente por región
+ *              y emite un JWT de 8h con payload { ine, nombre, rol, cp }.
+ *
+ * Seguridad:
+ *  - Las contraseñas se hashean con bcryptjs (salt rounds = 10).
+ *  - La geocodificación usa Nominatim (OpenStreetMap); en fallo, usa coordenadas
+ *    aproximadas del centro de Pachuca para no bloquear el registro.
+ *  - El login verifica si el ciudadano ya completó TODAS sus elecciones disponibles
+ *    en su zona (por prefijo de CP) antes de emitir el token.
  */
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Ciudadano = require('../models/Ciudadano');
-const Eleccion = require('../models/Eleccion'); // Importación necesaria para el punto 3
+const Eleccion = require('../models/Eleccion');
 
 /**
  * Convierte un código postal mexicano en coordenadas geográficas.
@@ -31,7 +43,7 @@ exports.registro = async (req, res) => {
     try {
         const { nombre, ine, password, cp } = req.body;
 
-        // --- PUNTO 4: VALIDACIONES DE ENTRADA ---
+        // Validación de formato: CP de 5 dígitos e INE de 18 caracteres alfanuméricos
         if (!/^\d{5}$/.test(cp)) {
             return res.status(400).json({ error: 'El Código Postal debe ser de 5 dígitos numéricos.' });
         }
@@ -54,7 +66,7 @@ exports.registro = async (req, res) => {
             codigoPostal: cp,
             coordenadas: coords,
             rol: 'ciudadano',
-            eleccionesVotadas: [] // Inicializamos el array vacío para el Punto 3
+            eleccionesVotadas: [] // Array vacío; crece conforme el ciudadano vota en elecciones
         });
 
         await nuevoCiudadano.save();
@@ -76,7 +88,8 @@ exports.login = async (req, res) => {
         const passCorrecto = await bcrypt.compare(password, usuario.password);
         if (!passCorrecto) return res.status(401).json({ error: '❌ Contraseña incorrecta.' });
 
-        // --- PUNTO 3: LÓGICA DE BLOQUEO INTELIGENTE ---
+        // Bloqueo inteligente: evita que ciudadanos que ya votaron en TODAS sus
+        // elecciones regionales vuelvan a ingresar (protección de doble voto a nivel sesión)
         if (usuario.rol === 'ciudadano') {
             const eleccionesActivas = await Eleccion.find({ activa: true });
             

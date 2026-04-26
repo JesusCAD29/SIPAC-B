@@ -11,18 +11,15 @@
 
 <body class="bg-[#1a1c2e] font-sans min-h-screen flex items-center justify-center p-4 relative">
 
-    <div id="urna-container"
-        class="w-full max-w-md bg-[#252843] rounded-2xl shadow-2xl overflow-hidden border border-slate-700/50">
+    <div id="urna-container" class="w-full max-w-md bg-[#252843] rounded-2xl shadow-2xl overflow-hidden border border-slate-700/50">
 
         <div class="bg-[#2d3154] py-6 text-center border-b border-slate-700/50 relative">
             <h1 class="text-2xl font-bold text-white">Urna Electrónica</h1>
             <p class="text-indigo-300 text-sm mt-1">Elecciones SIPAC-B</p>
 
-            <button onclick="cerrarSesion()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition"
-                title="Salir">
+            <button onclick="cerrarSesion()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition" title="Salir">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
             </button>
         </div>
@@ -32,13 +29,11 @@
             <div class="mb-6 bg-slate-900/50 rounded-xl p-4 border border-slate-700/30 flex items-center gap-4">
                 <div class="bg-indigo-500/20 p-2.5 rounded-full shrink-0">
                     <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                     </svg>
                 </div>
                 <div class="overflow-hidden">
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Credencial
-                        Verificada</p>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">Credencial Verificada</p>
                     <p id="display-nombre" class="text-sm font-bold text-slate-200 truncate">Cargando identidad...</p>
                     <p id="display-ine" class="text-xs text-indigo-300 font-mono mt-0.5"></p>
                 </div>
@@ -50,30 +45,23 @@
                 <p class="text-slate-500 text-xs col-span-2 text-center animate-pulse">Cargando opciones de voto...</p>
             </div>
 
-            <div id="msg-error"
-                class="hidden mb-4 text-center text-red-400 text-sm font-medium bg-red-400/10 py-2.5 rounded-lg border border-red-500/20">
+            <div id="msg-error" class="hidden mb-4 text-center text-red-400 text-sm font-medium bg-red-400/10 py-2.5 rounded-lg border border-red-500/20">
             </div>
 
             <div class="mb-6 bg-[#1f2238] rounded-xl p-4 border border-slate-700/50">
-                <label
-                    class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wider flex items-center gap-2">
+                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wider flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                     </svg>
                     Propuesta Ciudadana (Opcional)
                 </label>
-                <textarea id="f-propuesta"
-                    placeholder="Ej. Sugiero que se instalen más luminarias en la avenida principal..."
-                    class="w-full bg-[#161827] border border-slate-700 rounded-lg px-3 py-3 text-slate-200 outline-none focus:border-indigo-500 transition text-sm h-20 resize-none shadow-inner"></textarea>
+                <textarea id="f-propuesta" placeholder="Ej. Sugiero que se instalen más luminarias en la avenida principal..." class="w-full bg-[#161827] border border-slate-700 rounded-lg px-3 py-3 text-slate-200 outline-none focus:border-indigo-500 transition text-sm h-20 resize-none shadow-inner"></textarea>
                 <p class="text-[10px] text-slate-500 mt-1 text-right">Esta propuesta será analizada por nuestra IA.</p>
             </div>
 
-            <button id="btn-votar" onclick="emitirVoto()"
-                class="w-full bg-[#524de1] hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition shadow-[0_4px_15px_rgba(82,77,225,0.4)] flex items-center justify-center gap-2">
+            <button id="btn-votar" onclick="emitirVoto()" class="w-full bg-[#524de1] hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition shadow-[0_4px_15px_rgba(82,77,225,0.4)] flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
                 <span>Emitir Voto Seguro</span>
             </button>
@@ -81,8 +69,7 @@
         </div>
     </div>
 
-    <div id="pantalla-exito"
-        class="hidden absolute inset-0 bg-[#0f172a]/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm z-50">
+    <div id="pantalla-exito" class="hidden absolute inset-0 bg-[#0f172a]/95 flex flex-col items-center justify-center p-4 backdrop-blur-sm z-50">
         <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border border-green-500/30">
             <div class="mx-auto w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
                 <svg class="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,16 +77,14 @@
                 </svg>
             </div>
             <h2 class="text-2xl font-bold text-white mb-2">Voto Blindado</h2>
-            <p class="text-slate-400 text-sm mb-6">Tu decisión ha sido encriptada y sellada en la Blockchain de SIPAC-B.
-            </p>
+            <p class="text-slate-400 text-sm mb-6">Tu decisión ha sido encriptada y sellada en la Blockchain de SIPAC-B.</p>
 
             <div class="bg-slate-900 p-4 rounded-lg mb-8 break-all">
                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Hash de Verificación (Guárdalo)</p>
                 <p id="hash-voto" class="text-green-400 font-mono text-xs"></p>
             </div>
 
-            <button onclick="window.location.href='/ciudadano.html'"
-                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+            <button onclick="window.location.href='/ciudadano.html'" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
                 <span>Continuar con mis votaciones</span>
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -108,191 +93,7 @@
         </div>
     </div>
 
-    <script>
-        // Variables globales de la sesión activa
-        let ineSesion = null;
-        let nombreSesion = null;
-        let opcionesVoto = [];
-
-        /**
-         * Al cargar el DOM:
-         *  1. Verifica el token JWT (redirige al login si falta).
-         *  2. Valida que la URL contenga ?id=<eleccionId>.
-         *  3. Consulta /api/elecciones/activas y busca la elección por _id.
-         *  4. Llama a dibujarOpciones() con el array de candidatos de esa elección.
-         *  5. Muestra nombre e INE del ciudadano autenticado en la boleta.
-         */
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (!verificarAccesoProtegido()) return;
-
-            ineSesion = sessionStorage.getItem('sesion_ine');
-            nombreSesion = sessionStorage.getItem('sesion_nombre');
-
-            if (!ineSesion) {
-                alert("Sesión expirada. Vuelve a iniciar sesión.");
-                cerrarSesionGlobal();
-                return;
-            }
-
-            // Lee el ID de la elección que el ciudadano seleccionó en ciudadano.html
-            const urlParams = new URLSearchParams(window.location.search);
-            const eleccionId = urlParams.get('id');
-
-            if (!eleccionId) {
-                alert("⚠️ Error: No se indicó a qué elección pertenece esta boleta.");
-                window.location.replace('/ciudadano.html');
-                return;
-            }
-
-            // Obtiene la lista de elecciones y filtra la correcta por su _id
-            try {
-                const res = await fetchProtegido('/api/elecciones/activas');
-                const elecciones = await res.json();
-                const eleccion = elecciones.find(e => e._id === eleccionId);
-
-                if (!eleccion) {
-                    alert("⚠️ Esta elección no existe o ya fue cerrada.");
-                    window.location.replace('/ciudadano.html');
-                    return;
-                }
-
-                opcionesVoto = eleccion.opciones;
-                dibujarOpciones(opcionesVoto);
-
-            } catch (err) {
-                alert("❌ Error de conexión al cargar la boleta.");
-                window.location.replace('/ciudadano.html');
-                return;
-            }
-
-            // Normaliza el nombre para mostrarlo sin tildes en mayúsculas
-            let nombreMostrar = "CIUDADANO";
-            if (nombreSesion) {
-                nombreMostrar = nombreSesion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-            }
-            document.getElementById('display-nombre').innerText = nombreMostrar;
-            document.getElementById('display-ine').innerText = `ID: ${ineSesion}`;
-        });
-
-        /**
-         * dibujarOpciones — Renderiza una tarjeta radio por cada candidato/opción.
-         * Asigna colores de la paleta por posición y detecta keywords especiales
-         * ('ABST', 'NULO', 'AZUL', 'ROJO', 'VERDE') para colorear semánticamente.
-         *
-         * @param {string[]} opciones - Lista de nombres de candidatos o partidos.
-         */
-        function dibujarOpciones(opciones) {
-            const contenedor = document.getElementById('contenedor-opciones');
-            contenedor.innerHTML = '';
-
-            const paletaColores = ['blue', 'red', 'green', 'purple', 'yellow', 'pink'];
-
-            opciones.forEach((opcionTexto, index) => {
-                const opcionLimpia = opcionTexto.toUpperCase();
-
-                // Asignación de color: primero por keywords, luego por posición
-                let color = paletaColores[index % paletaColores.length];
-                if      (opcionLimpia.includes('ABST') || opcionLimpia.includes('NULO')) color = 'slate';
-                else if (opcionLimpia.includes('AZUL'))                                  color = 'blue';
-                else if (opcionLimpia.includes('ROJA') || opcionLimpia.includes('ROJO')) color = 'red';
-                else if (opcionLimpia.includes('VERDE'))                                 color = 'green';
-
-                contenedor.innerHTML += `
-                    <label class="cursor-pointer group">
-                        <input type="radio" name="candidato" value="${opcionTexto}" class="peer hidden">
-                        <div class="h-full bg-[#1f2238] border-2 border-[#363b5e] rounded-xl p-5 flex flex-col items-center justify-center text-center transition-all peer-checked:border-${color}-500 peer-checked:bg-${color}-500/10 group-hover:border-${color}-400">
-                            
-                            <div class="w-14 h-14 bg-${color}-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-${color}-500/30">
-                                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            
-                            <span class="font-bold text-slate-200 text-sm leading-tight">${opcionTexto}</span>
-                        </div>
-                    </label>
-                `;
-            });
-        }
-
-        /** Alias local que delega el cierre de sesión a la función global de auth.js. */
-        function cerrarSesion() {
-            cerrarSesionGlobal();
-        }
-
-        /**
-         * emitirVoto — Envía el voto autenticado al servidor.
-         * Flujo:
-         *  1. Valida que haya candidato seleccionado y que el ?id esté en la URL.
-         *  2. Llama a POST /api/votar con { candidato, propuesta, eleccionId }.
-         *  3. Si tiene éxito, oculta la urna y muestra la pantalla de éxito con el folio UUID.
-         *  4. Si recibe 401/403, cierra sesión automáticamente tras 2 segundos.
-         */
-        async function emitirVoto() {
-            const candidatoSeleccionado = document.querySelector('input[name="candidato"]:checked');
-            const msgError  = document.getElementById('msg-error');
-            const btnVotar  = document.getElementById('btn-votar');
-            const propuestaTexto = document.getElementById('f-propuesta')
-                ? document.getElementById('f-propuesta').value.trim()
-                : "";
-
-            const urlParams      = new URLSearchParams(window.location.search);
-            const eleccionIdActual = urlParams.get('id');
-
-            if (!candidatoSeleccionado) {
-                msgError.innerText = '⚠️ Por favor, selecciona una opción antes de votar.';
-                msgError.classList.remove('hidden');
-                return;
-            }
-
-            if (!eleccionIdActual) {
-                msgError.innerText = '⚠️ Error fatal: No se detectó a qué elección pertenece esta boleta.';
-                msgError.classList.remove('hidden');
-                return;
-            }
-
-            msgError.classList.add('hidden');
-            btnVotar.disabled = true;
-            btnVotar.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Encriptando...`;
-
-            try {
-                const respuesta = await fetchProtegido('/api/votar', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        ine: ineSesion,
-                        candidato: candidatoSeleccionado.value,
-                        propuesta: propuestaTexto,
-                        eleccionId: eleccionIdActual
-                    })
-                });
-
-                if (respuesta.status === 401 || respuesta.status === 403) {
-                    const datosError = await respuesta.json();
-                    throw new Error(datosError.error || "Token inválido o expirado.");
-                }
-
-                const datos = await respuesta.json();
-                if (!respuesta.ok) throw new Error(datos.error);
-
-                // Éxito: oculta la urna y muestra el folio de verificación
-                document.getElementById('urna-container').classList.add('hidden');
-                document.getElementById('hash-voto').innerText = datos.folio;
-                document.getElementById('pantalla-exito').classList.remove('hidden');
-
-            } catch (error) {
-                msgError.innerText = error.message;
-                msgError.classList.remove('hidden');
-
-                // Si el token expiró, redirige al login tras 2 segundos
-                if (error.message.includes('Token') || error.message.includes('Autorización')) {
-                    setTimeout(() => cerrarSesionGlobal(), 2000);
-                }
-
-                btnVotar.disabled = false;
-                btnVotar.innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> <span>Emitir Voto Seguro</span>`;
-            }
-        }
-    </script>
+    <script src="js/boleta.js"></script>
 </body>
 
 </html>
